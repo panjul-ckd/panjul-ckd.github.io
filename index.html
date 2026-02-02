@@ -1,284 +1,388 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Edit Foto – Pas Foto & 4R</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Edit Foto – Pas Foto & 4R (Multi Foto)</title>
 
 <style>
-body{
-  margin:0;
-  font-family:system-ui,Arial,sans-serif;
-  background:#f3f5f7;
-  color:#111;
-}
-header{
-  position:sticky;top:0;
-  background:#fff;
-  border-bottom:1px solid #ddd;
-  padding:14px;
-}
-h1{margin:0;font-size:18px}
-.sub{font-size:12px;color:#666}
+  :root{
+    --bg:#f3f5f7; --card:#fff; --b:#111; --g:#666; --line:#ddd; --r:14px;
+  }
+  body{margin:0;font-family:system-ui,Arial,sans-serif;background:var(--bg);color:var(--b)}
+  header{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);padding:14px}
+  h1{margin:0;font-size:18px}
+  .sub{font-size:12px;color:var(--g)}
+  .wrap{max-width:1150px;margin:auto;padding:16px}
+  .grid{display:grid;grid-template-columns:1.25fr .75fr;gap:16px}
+  @media(max-width:950px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+  .drop{
+    border:2px dashed #bbb;border-radius:12px;padding:16px;text-align:center;cursor:pointer;
+    background:linear-gradient(#fff,#fff) padding-box;
+  }
+  .small{font-size:12px;color:var(--g);line-height:1.4}
+  canvas{width:100%;border-radius:12px;border:1px solid var(--line);background:#fafafa}
+  label{font-size:12px;color:#555;display:block;margin-top:10px}
+  select,input{width:100%;padding:10px;border-radius:12px;border:1px solid #ccc}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  button{padding:10px 12px;border-radius:12px;border:0;cursor:pointer;font-weight:700}
+  .btn{background:#111;color:#fff}
+  .btn.secondary{background:#fff;color:#111;border:1px solid #ccc}
+  .sep{height:1px;background:#eee;margin:12px 0}
 
-.wrap{max-width:1100px;margin:auto;padding:16px}
-.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
-@media(max-width:900px){.grid{grid-template-columns:1fr}}
-
-.card{
-  background:#fff;
-  border-radius:14px;
-  padding:14px;
-  border:1px solid #ddd;
-}
-
-button,select,input{
-  padding:8px;
-  border-radius:10px;
-  border:1px solid #ccc;
-}
-
-button{
-  cursor:pointer;
-  background:#111;
-  color:#fff;
-  border:none;
-}
-button.secondary{
-  background:#fff;
-  color:#111;
-  border:1px solid #ccc;
-}
-
-.drop{
-  border:2px dashed #bbb;
-  border-radius:12px;
-  padding:20px;
-  text-align:center;
-  cursor:pointer;
-}
-
-canvas{
-  width:100%;
-  border-radius:12px;
-  border:1px solid #ddd;
-  background:#fafafa;
-}
-
-label{font-size:12px;color:#555}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-.sep{height:1px;background:#eee;margin:12px 0}
-.small{font-size:12px;color:#666}
+  /* Multi photo tray */
+  .tray{display:flex;gap:10px;overflow:auto;padding:10px;border:1px solid #eee;border-radius:12px;background:#fafafa}
+  .thumb{
+    width:74px;height:74px;border-radius:12px;border:2px solid transparent;flex:0 0 auto;
+    background:#fff;display:grid;place-items:center;overflow:hidden;cursor:pointer;
+  }
+  .thumb.active{border-color:#111}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .meta{font-size:12px;color:#444}
+  .pill{display:inline-block;padding:4px 10px;border-radius:999px;background:#111;color:#fff;font-size:12px}
 </style>
 </head>
 
 <body>
 <header>
   <h1>Edit Foto</h1>
-  <div class="sub">Pas Foto Indonesia & 4R – Gratis (GitHub Pages)</div>
+  <div class="sub">✅ Multi Foto • Pas Foto Indonesia • 4R • A4 nempel kanan atas</div>
 </header>
 
 <div class="wrap">
-<div class="grid">
+  <div class="grid">
+    <!-- PREVIEW -->
+    <section class="card">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <div class="pill">Foto aktif: <span id="activeName">-</span></div>
+          <div class="small" style="margin-top:6px">Klik thumbnail untuk ganti foto aktif. Foto baru <b>ditambah</b>, bukan replace.</div>
+        </div>
+        <div class="row">
+          <button class="btn secondary" id="removeActive" disabled>🗑️ Hapus foto aktif</button>
+        </div>
+      </div>
 
-<!-- PREVIEW -->
-<div class="card">
-  <div class="drop" id="drop">
-    <b>Upload Foto</b>
-    <div class="small">Klik atau drag foto ke sini</div>
-    <input type="file" id="file" accept="image/*" hidden>
+      <div class="sep"></div>
+
+      <div class="drop" id="drop">
+        <b>Tambah Foto</b>
+        <div class="small">Klik atau drag & drop (bisa pilih banyak sekaligus)</div>
+        <input type="file" id="file" accept="image/*" multiple hidden />
+      </div>
+
+      <div style="margin-top:10px">
+        <div class="tray" id="tray">
+          <div class="small">Belum ada foto.</div>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <canvas id="cv" width="1200" height="800"></canvas>
+
+      <div class="sep"></div>
+
+      <div class="row">
+        <button class="btn" id="download" disabled>⬇️ Download</button>
+        <button class="btn secondary" id="reset">↩️ Reset semua</button>
+        <span class="small">Tips: pas foto + copies&gt;1 = A4. copies=1 = output satu pas foto.</span>
+      </div>
+    </section>
+
+    <!-- CONTROLS -->
+    <aside class="card">
+      <label>Ukuran</label>
+      <select id="size">
+        <optgroup label="Pas Foto Indonesia (300dpi)">
+          <option value="2x3">2x3 cm</option>
+          <option value="3x4" selected>3x4 cm</option>
+          <option value="4x6cm">4x6 cm</option>
+        </optgroup>
+        <optgroup label="Foto Umum">
+          <option value="4r">4R / 10x15 cm</option>
+        </optgroup>
+      </select>
+
+      <label>Cetak banyak di A4 (khusus pas foto)</label>
+      <select id="copies">
+        <option value="1" selected>1 (default)</option>
+        <option value="2">2</option>
+        <option value="4">4</option>
+        <option value="6">6 (umum)</option>
+        <option value="8">8</option>
+        <option value="10">10</option>
+        <option value="12">12</option>
+      </select>
+
+      <label>Jarak antar foto (kalau A4)</label>
+      <input type="range" id="gap" min="0" max="60" value="18" />
+
+      <div class="sep"></div>
+
+      <label>Zoom</label>
+      <input type="range" id="zoom" min="1" max="2" step="0.01" value="1.15" />
+
+      <label>Geser X</label>
+      <input type="range" id="panx" min="-1" max="1" step="0.01" value="0" />
+
+      <label>Geser Y</label>
+      <input type="range" id="pany" min="-1" max="1" step="0.01" value="0" />
+
+      <div class="sep"></div>
+
+      <div class="small">
+        • Kalau pilih pas foto & copies &gt; 1 → jadi <b>sheet A4</b> dan posisi mulai <b>pojok kanan atas</b>.<br/>
+        • Kalau copies = 1 → output <b>satu</b> pas foto sesuai ukuran.<br/>
+        • 4R selalu output single.
+      </div>
+    </aside>
   </div>
-
-  <div class="sep"></div>
-
-  <canvas id="cv" width="1200" height="800"></canvas>
-
-  <div class="sep"></div>
-
-  <div class="row">
-    <button id="download">⬇️ Download</button>
-    <button class="secondary" id="reset">↩️ Reset</button>
-  </div>
-</div>
-
-<!-- CONTROL -->
-<div class="card">
-  <label>Ukuran Cetak</label>
-  <select id="size">
-    <optgroup label="Pas Foto Indonesia (300dpi)">
-      <option value="2x3">2x3 cm</option>
-      <option value="3x4" selected>3x4 cm</option>
-      <option value="4x6cm">4x6 cm</option>
-    </optgroup>
-    <optgroup label="Foto Umum">
-      <option value="4r">4R / 10x15 cm</option>
-    </optgroup>
-  </select>
-
-  <div class="sep"></div>
-
-  <label>Cetak Banyak di A4 (khusus pas foto)</label>
-  <select id="copies">
-    <option value="1">1</option>
-    <option value="2">2</option>
-    <option value="4">4</option>
-    <option value="6" selected>6 (umum)</option>
-    <option value="8">8</option>
-    <option value="10">10</option>
-    <option value="12">12</option>
-  </select>
-
-  <label style="margin-top:10px">Jarak antar foto</label>
-  <input type="range" id="gap" min="0" max="60" value="18">
-
-  <div class="sep"></div>
-
-  <label>Zoom</label>
-  <input type="range" id="zoom" min="1" max="2" step="0.01" value="1.15">
-
-  <label>Geser X</label>
-  <input type="range" id="panx" min="-1" max="1" step="0.01" value="0">
-
-  <label>Geser Y</label>
-  <input type="range" id="pany" min="-1" max="1" step="0.01" value="0">
-
-  <div class="sep"></div>
-
-  <div class="small">
-    ✔ Pas foto auto jadi A4 banyak lembar  
-    ✔ 4R hasil single  
-    ✔ Aman refresh GitHub Pages
-  </div>
-</div>
-
-</div>
 </div>
 
 <script>
-const cv = document.getElementById("cv");
-const ctx = cv.getContext("2d");
+  const cv = document.getElementById("cv");
+  const ctx = cv.getContext("2d");
 
-const file = document.getElementById("file");
-const drop = document.getElementById("drop");
+  const file = document.getElementById("file");
+  const drop = document.getElementById("drop");
 
-const sizeSel = document.getElementById("size");
-const copiesSel = document.getElementById("copies");
-const gapSel = document.getElementById("gap");
-const zoomSel = document.getElementById("zoom");
-const panxSel = document.getElementById("panx");
-const panySel = document.getElementById("pany");
+  const tray = document.getElementById("tray");
+  const activeName = document.getElementById("activeName");
+  const btnRemoveActive = document.getElementById("removeActive");
+  const btnDownload = document.getElementById("download");
+  const btnReset = document.getElementById("reset");
 
-let img = null;
+  const sizeSel = document.getElementById("size");
+  const copiesSel = document.getElementById("copies");
+  const gapSel = document.getElementById("gap");
+  const zoomSel = document.getElementById("zoom");
+  const panxSel = document.getElementById("panx");
+  const panySel = document.getElementById("pany");
 
-const SIZE = {
-  "2x3": {w:236,h:354},
-  "3x4": {w:354,h:472},
-  "4x6cm": {w:472,h:709},
-  "4r": {w:1181,h:1772}
-};
+  // DATA
+  const photos = []; // {name, img, url}
+  let activeIndex = -1;
 
-function setCanvas(w,h){
-  cv.width=w;cv.height=h;
-}
+  const SIZE = {
+    "2x3":   { w:236,  h:354 },
+    "3x4":   { w:354,  h:472 },
+    "4x6cm": { w:472,  h:709 },
+    "4r":    { w:1181, h:1772 }
+  };
 
-function drawCover(x,y,w,h){
-  const iw=img.naturalWidth, ih=img.naturalHeight;
-  const zoom=parseFloat(zoomSel.value);
-  const panx=parseFloat(panxSel.value);
-  const pany=parseFloat(panySel.value);
+  function setCanvas(w,h){ cv.width=w; cv.height=h; }
 
-  const scale=Math.max(w/iw,h/ih)*zoom;
-  const sw=iw*scale, sh=ih*scale;
-  const dx=x+(w-sw)/2+panx*(Math.abs(w-sw)/2);
-  const dy=y+(h-sh)/2+pany*(Math.abs(h-sh)/2);
-
-  ctx.drawImage(img,dx,dy,sw,sh);
-}
-
-function render(){
-  if(!img){
-    setCanvas(1200,800);
-    ctx.fillStyle="#fff";
-    ctx.fillRect(0,0,cv.width,cv.height);
-    ctx.fillStyle="#666";
-    ctx.font="20px system-ui";
-    ctx.fillText("Upload foto dulu bang 😄",40,60);
-    return;
+  function getActiveImg(){
+    if(activeIndex < 0 || activeIndex >= photos.length) return null;
+    return photos[activeIndex].img;
   }
 
-  const key=sizeSel.value;
-  const t=SIZE[key];
-  const isPasFoto=key!=="4r";
-  const copies=parseInt(copiesSel.value);
-  const gap=parseInt(gapSel.value);
+  function drawPlaceholder(){
+    setCanvas(1200, 800);
+    ctx.fillStyle = "#fff"; ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.fillStyle = "#666"; ctx.font = "20px system-ui";
+    ctx.fillText("Ntar ada foto nya disini", 40, 60);
+  }
 
-  if(isPasFoto && copies>1){
-    setCanvas(2480,3508);
-    ctx.fillStyle="#fff";
-    ctx.fillRect(0,0,cv.width,cv.height);
+  function drawCoverAt(img, x, y, w, h){
+    const iw = img.naturalWidth, ih = img.naturalHeight;
+    const zoom = parseFloat(zoomSel.value);
+    const panx = parseFloat(panxSel.value);
+    const pany = parseFloat(panySel.value);
 
-    const map={2:[2,1],4:[2,2],6:[3,2],8:[4,2],10:[5,2],12:[4,3]};
-    const [cols,rows]=map[copies]||[3,2];
+    const scale = Math.max(w/iw, h/ih) * zoom;
+    const sw = iw * scale, sh = ih * scale;
 
-    const totalW=cols*t.w+(cols-1)*gap;
-    const totalH=rows*t.h+(rows-1)*gap;
-    const sx=(cv.width-totalW)/2;
-    const sy=(cv.height-totalH)/2;
+    const dx = x + (w - sw)/2 + panx * (Math.abs(w - sw)/2);
+    const dy = y + (h - sh)/2 + pany * (Math.abs(h - sh)/2);
 
-    for(let r=0;r<rows;r++){
-      for(let c=0;c<cols;c++){
-        const x=sx+c*(t.w+gap);
-        const y=sy+r*(t.h+gap);
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(x,y,t.w,t.h);
-        ctx.clip();
-        drawCover(x,y,t.w,t.h);
-        ctx.restore();
-      }
+    ctx.drawImage(img, dx, dy, sw, sh);
+  }
+
+  function render(){
+    const img = getActiveImg();
+    if(!img){
+      drawPlaceholder();
+      activeName.textContent = "-";
+      btnRemoveActive.disabled = true;
+      btnDownload.disabled = true;
+      return;
     }
-    return;
+
+    activeName.textContent = photos[activeIndex].name || "foto";
+    btnRemoveActive.disabled = false;
+    btnDownload.disabled = false;
+
+    const key = sizeSel.value;
+    const t = SIZE[key];
+    const isPasFoto = key !== "4r";
+    const copies = parseInt(copiesSel.value, 10);
+    const gap = parseInt(gapSel.value, 10);
+
+    // Pas foto + copies>1 => A4 sheet top-right
+    if(isPasFoto && copies > 1){
+      setCanvas(2480, 3508);
+      ctx.fillStyle="#fff"; ctx.fillRect(0,0,cv.width,cv.height);
+
+      const map = {2:[2,1],4:[2,2],6:[3,2],8:[4,2],10:[5,2],12:[4,3]};
+      const [cols, rows] = map[copies] || [3,2];
+
+      const totalW = cols * t.w + (cols - 1) * gap;
+      const totalH = rows * t.h + (rows - 1) * gap;
+
+      // POSISI: POJOK KANAN ATAS (sesuai request)
+      const margin = 80; // margin aman buat printer
+      const startX = cv.width - margin - totalW;
+      const startY = margin;
+
+      for(let r=0; r<rows; r++){
+        for(let c=0; c<cols; c++){
+          const x = startX + c*(t.w + gap);
+          const y = startY + r*(t.h + gap);
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(x, y, t.w, t.h);
+          ctx.clip();
+          drawCoverAt(img, x, y, t.w, t.h);
+          ctx.restore();
+        }
+      }
+      return;
+    }
+
+    // Single output (pas foto copies=1 atau 4R)
+    setCanvas(t.w, t.h);
+    ctx.fillStyle="#fff"; ctx.fillRect(0,0,cv.width,cv.height);
+    drawCoverAt(img, 0, 0, cv.width, cv.height);
   }
 
-  setCanvas(t.w,t.h);
-  ctx.fillStyle="#fff";
-  ctx.fillRect(0,0,cv.width,cv.height);
-  drawCover(0,0,cv.width,cv.height);
-}
+  function renderTray(){
+    tray.innerHTML = "";
+    if(photos.length === 0){
+      const div = document.createElement("div");
+      div.className = "small";
+      div.textContent = "Belum ada foto.";
+      tray.appendChild(div);
+      return;
+    }
 
-file.onchange=e=>{
-  const f=e.target.files[0];
-  if(!f)return;
-  img=new Image();
-  img.onload=render;
-  img.src=URL.createObjectURL(f);
-};
+    photos.forEach((p, i) => {
+      const box = document.createElement("div");
+      box.className = "thumb" + (i === activeIndex ? " active" : "");
+      box.title = p.name || `foto-${i+1}`;
 
-drop.onclick=()=>file.click();
-drop.ondragover=e=>e.preventDefault();
-drop.ondrop=e=>{
-  e.preventDefault();
-  file.files=e.dataTransfer.files;
-  file.onchange({target:file});
-};
+      const im = document.createElement("img");
+      im.src = p.url;
+      box.appendChild(im);
 
-[sizeSel,copiesSel,gapSel,zoomSel,panxSel,panySel].forEach(el=>{
-  el.oninput=render;
-});
+      box.onclick = () => {
+        activeIndex = i;
+        renderTray();
+        render();
+      };
 
-document.getElementById("download").onclick=()=>{
-  const a=document.createElement("a");
-  a.href=cv.toDataURL("image/jpeg",0.95);
-  a.download="hasil.jpg";
-  a.click();
-};
+      tray.appendChild(box);
+    });
+  }
 
-document.getElementById("reset").onclick=()=>{
-  img=null;
+  async function addFiles(fileList){
+    const files = Array.from(fileList || []).filter(f => f && f.type && f.type.startsWith("image/"));
+    if(files.length === 0) return;
+
+    for(const f of files){
+      const url = URL.createObjectURL(f);
+      const img = new Image();
+      img.decoding = "async";
+      img.src = url;
+
+      await img.decode().catch(() => {
+        // kalau decode gagal, tetap simpan, tapi skip render
+      });
+
+      photos.push({ name: f.name, img, url });
+      if(activeIndex === -1) activeIndex = 0; // pertama kali
+    }
+
+    // kalau tambah foto baru, jadikan foto terakhir sebagai aktif (biar berasa "nambah")
+    activeIndex = photos.length - 1;
+
+    renderTray();
+    render();
+  }
+
+  // INPUT / DROP
+  drop.onclick = () => file.click();
+  file.onchange = (e) => addFiles(e.target.files);
+
+  drop.ondragover = (e) => e.preventDefault();
+  drop.ondrop = (e) => {
+    e.preventDefault();
+    addFiles(e.dataTransfer.files);
+  };
+
+  // CONTROLS
+  [sizeSel, copiesSel, gapSel, zoomSel, panxSel, panySel].forEach(el => {
+    el.oninput = render;
+  });
+
+  // Hapus foto aktif
+  btnRemoveActive.onclick = () => {
+    if(activeIndex < 0) return;
+
+    // revoke url biar gak bocor memori
+    try{ URL.revokeObjectURL(photos[activeIndex].url); }catch(_){}
+
+    photos.splice(activeIndex, 1);
+
+    if(photos.length === 0){
+      activeIndex = -1;
+    } else {
+      activeIndex = Math.min(activeIndex, photos.length - 1);
+    }
+
+    renderTray();
+    render();
+  };
+
+  // Download
+  btnDownload.onclick = () => {
+    const a = document.createElement("a");
+    a.href = cv.toDataURL("image/jpeg", 0.95);
+
+    const key = sizeSel.value;
+    const copies = parseInt(copiesSel.value, 10);
+    const base = (photos[activeIndex]?.name || "hasil").replace(/\.[^/.]+$/, "");
+    a.download = (key !== "4r" && copies > 1)
+      ? `${base}-A4-${key}-${copies}lembar.jpg`
+      : `${base}-${key}.jpg`;
+
+    a.click();
+  };
+
+  // Reset semua
+  btnReset.onclick = () => {
+    photos.forEach(p => { try{ URL.revokeObjectURL(p.url); }catch(_){ } });
+    photos.length = 0;
+    activeIndex = -1;
+
+    // balikin default biar enak
+    sizeSel.value = "3x4";
+    copiesSel.value = "1";
+    gapSel.value = "18";
+    zoomSel.value = "1.15";
+    panxSel.value = "0";
+    panySel.value = "0";
+
+    renderTray();
+    render();
+  };
+
+  // INIT
+  renderTray();
   render();
-};
-
-render();
 </script>
 </body>
 </html>
