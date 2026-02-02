@@ -11,47 +11,36 @@
 <body>
 
     <div class="sidebar">
-        <h2>✨ Studio Foto FnD</h2>
+        <h2>✨ Studio FnD</h2>
         <p style="font-size: 13px; color: #64748b; margin: -10px 0 20px 0;">
-            Ubah foto menjadi pas foto siap cetak dalam hitungan detik dengan FnD.
+            Ubah foto menjadi pas foto siap cetak secara instan.
         </p>
         
-        <div id="loading">🚀 FnD Sedang memproses ... Harap tunggu sebentar</div>
+        <div id="loading">🚀 Sedang memproses FnD... Harap tunggu sebentar</div>
 
         <div class="control-group">
             <label>📏 Langkah 1: Pilih Ukuran</label>
             <select id="size" onchange="updatePreview()">
-                <optgroup label="Pas Foto Standar">
-                    <option value="2x3">Pas Foto 2 x 3 cm</option>
-                    <option value="3x4" selected>Pas Foto 3 x 4 cm</option>
-                    <option value="4x6">Pas Foto 4 x 6 cm</option>
-                </optgroup>
-                <optgroup label="Ukuran Cetak Besar">
-                    <option value="4R">Ukuran 4R (10 x 15 cm)</option>
-                    <option value="8R">Ukuran 8R (20 x 25 cm)</option>
-                </optgroup>
+                <option value="2x3">Pas Foto 2 x 3 cm</option>
+                <option value="3x4" selected>Pas Foto 3 x 4 cm</option>
+                <option value="4x6">Pas Foto 4 x 6 cm</option>
+                <option value="4R">Ukuran 4R (10 x 15 cm)</option>
+                <option value="8R">Ukuran 8R (20 x 25 cm)</option>
             </select>
         </div>
 
         <div class="control-group">
             <label>📤 Langkah 2: Unggah Foto</label>
             <input type="file" id="upload" accept="image/*" multiple onchange="handleUpload(event)">
-            <small style="color: #94a3b8; font-size: 11px;">*Bisa memilih banyak foto sekaligus</small>
         </div>
         
         <div id="photoListContainer"></div>
 
-        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
-
         <button class="btn btn-print" onclick="generatePDF()">📥 Download PDF (Siap Cetak A4)</button>
-        
-        <p style="font-size: 11px; color: #94a3b8; text-align: center; margin-top: 15px;">
-            Gunakan kertas A4 Glossy untuk hasil terbaik.
-        </p>
     </div>
 
     <div class="main-content">
-        <h3 style="margin-bottom: 15px;">Preview Kertas Cetak A4</h3>
+        <h3 style="margin-bottom: 15px; color: #1e293b;">Preview Kertas A4</h3>
         <div class="paper-container">
             <div id="paper" class="paper-a4"></div>
         </div>
