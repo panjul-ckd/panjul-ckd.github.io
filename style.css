@@ -1,77 +1,129 @@
-:root {
-    --a4-width: 90vw;
-    --a4-ratio: 1.414;
-    --primary: #2563eb;
-    --primary-hover: #1d4ed8;
-    --bg-card: rgba(255, 255, 255, 0.95); /* Putih transparan agar bg terlihat */
-    --text-main: #1e293b;
+let photos = [];
+const sizes = { 
+    '2x3': {w: 21, h: 30}, '3x4': {w: 28, h: 38}, '4x6': {w: 38, h: 56},
+    '4R': {w: 102, h: 152}, '8R': {w: 203, h: 254}
+};
+
+async function handleUpload(event) {
+    const files = event.target.files;
+    const loader = document.getElementById('loading');
+    for (let file of files) {
+        loader.style.display = 'block';
+        const originalSrc = await fileToBox64(file);
+        try {
+            const blob = await imglyRemoveBackground(file);
+            const noBgSrc = URL.createObjectURL(blob);
+            photos.push({ original: originalSrc, noBg: noBgSrc, current: originalSrc, qty: 1 });
+        } catch (e) {
+            photos.push({ original: originalSrc, current: originalSrc, qty: 1 });
+        }
+        loader.style.display = 'none';
+        renderPhotoList();
+        updatePreview();
+    }
 }
 
-@media (min-width: 1024px) { :root { --a4-width: 520px; } }
-
-body { 
-    font-family: 'Inter', sans-serif; 
-    /* Menggunakan gambar bg-fnd.jpg milik Anda */
-    background: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), 
-                url('bg-fnd.jpg');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    margin: 0; padding: 15px; 
-    display: flex; flex-direction: column; gap: 24px;
-    min-height: 100vh;
+function fileToBox64(file) {
+    return new Promise(res => {
+        const reader = new FileReader();
+        reader.onload = e => res(e.target.result);
+        reader.readAsDataURL(file);
+    });
 }
 
-@media (min-width: 1024px) {
-    body { flex-direction: row; padding: 40px; justify-content: center; align-items: flex-start; }
-    .sidebar { width: 420px; position: sticky; top: 40px; max-height: 90vh; }
+function renderPhotoList() {
+    const container = document.getElementById('photoListContainer');
+    container.innerHTML = '';
+    photos.forEach((photo, index) => {
+        const div = document.createElement('div');
+        div.className = 'photo-item';
+        div.innerHTML = `
+            <img src="${photo.current}">
+            <div style="flex:1">
+                <label style="font-size:12px">Jumlah:</label>
+                <input type="number" value="${photo.qty}" min="1" onchange="updateQty(${index}, this.value)" style="width:45px; padding:4px; border-radius:5px; border:1px solid #ddd;">
+                <div class="bg-options">
+                    <button class="bg-btn" onclick="changeBg(${index}, 'original')">Asli</button>
+                    <button class="bg-btn bg-red" onclick="changeBg(${index}, '#ff0000')">Merah</button>
+                    <button class="bg-btn bg-blue" onclick="changeBg(${index}, '#0000ff')">Biru</button>
+                </div>
+                <div style="display:flex; gap:5px; margin-top:8px;">
+                    <button onclick="downloadSingle(${index})" style="font-size:10px; cursor:pointer; flex:1; padding:5px; border-radius:4px; border:1px solid #ddd; background:white;">💾 PNG</button>
+                    <button onclick="removePhoto(${index})" style="color:red; border:none; background:none; cursor:pointer; font-size:10px;">✕ Hapus</button>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    });
 }
 
-.sidebar { 
-    background: var(--bg-card); padding: 28px; border-radius: 20px; 
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); overflow-y: auto; 
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(10px); /* Efek kaca kekinian */
+async function changeBg(index, color) {
+    const photo = photos[index];
+    const selectedSize = sizes[document.getElementById('size').value];
+    const canvas = document.getElementById('tempCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    if (color === 'original') {
+        photo.current = photo.original;
+    } else {
+        const img = new Image();
+        img.src = photo.noBg;
+        await new Promise(r => img.onload = r);
+        canvas.width = (selectedSize.w / 10) * 118; canvas.height = (selectedSize.h / 10) * 118;
+        ctx.fillStyle = color;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const scale = Math.max(canvas.width/img.width, canvas.height/img.height);
+        ctx.drawImage(img, (canvas.width/2)-(img.width/2)*scale, (canvas.height/2)-(img.height/2)*scale, img.width*scale, img.height*scale);
+        photo.current = canvas.toDataURL('image/png');
+    }
+    renderPhotoList();
+    updatePreview();
 }
 
-h2 { margin-top: 0; color: var(--primary); font-weight: 800; letter-spacing: -1px; }
-
-.control-group { margin-bottom: 20px; }
-label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 8px; color: #475569; }
-
-select, input[type="file"] { 
-    width: 100%; padding: 12px; border: 1.5px solid #e2e8f0; border-radius: 10px; background: white;
+function downloadSingle(index) {
+    const link = document.createElement('a');
+    link.download = `fnd-${Date.now()}.png`;
+    link.href = photos[index].current;
+    link.click();
 }
 
-.photo-item { 
-    display: flex; gap: 15px; background: white; padding: 15px; 
-    border-radius: 14px; margin-bottom: 12px; border: 1px solid #f1f5f9;
+function removePhoto(index) { photos.splice(index, 1); renderPhotoList(); updatePreview(); }
+function updateQty(index, val) { photos[index].qty = parseInt(val) || 1; updatePreview(); }
+
+function updatePreview() {
+    const paper = document.getElementById('paper');
+    paper.innerHTML = '';
+    const selectedSize = sizes[document.getElementById('size').value];
+    const scaleFactor = (paper.offsetWidth - 24) / 210; 
+    let curX = 12; let curY = 12;
+
+    photos.forEach(photo => {
+        for(let i = 0; i < photo.qty; i++) {
+            const wPx = selectedSize.w * scaleFactor;
+            const hPx = selectedSize.h * scaleFactor;
+            if (curX + wPx > paper.offsetWidth - 12) { curX = 12; curY += hPx + 4; }
+            if (curY + hPx > paper.offsetHeight - 12) break;
+            const imgDiv = document.createElement('div');
+            imgDiv.className = 'preview-photo';
+            Object.assign(imgDiv.style, { width: wPx+'px', height: hPx+'px', left: curX+'px', top: curY+'px', backgroundImage: `url(${photo.current})` });
+            paper.appendChild(imgDiv);
+            curX += wPx + 4;
+        }
+    });
 }
-.photo-item img { width: 75px; height: 95px; object-fit: cover; border-radius: 8px; }
 
-.bg-options { display: flex; gap: 6px; margin: 10px 0; }
-.bg-btn { 
-    flex: 1; padding: 8px 4px; border: 1px solid #e2e8f0; cursor: pointer; 
-    font-size: 11px; border-radius: 6px; font-weight: 700;
-}
-.bg-red { background: #dc2626; color: white; border: none; }
-.bg-blue { background: #2563eb; color: white; border: none; }
-
-.btn-print { 
-    background: var(--primary); color: white; border: none; padding: 16px; 
-    border-radius: 12px; font-weight: 700; cursor: pointer; width: 100%; 
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3); transition: 0.3s;
-}
-
-.paper-a4 {
-    width: var(--a4-width); height: calc(var(--a4-width) * var(--a4-ratio));
-    background: white; position: relative; padding: 10px; border: 1px solid #d1d5db;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-}
-
-.preview-photo { position: absolute; background-size: cover; border: 0.1mm solid #cbd5e1; }
-
-#loading { 
-    display: none; background: #eff6ff; color: #1e40af; padding: 14px; 
-    border-radius: 10px; margin-bottom: 20px; text-align: center; font-weight: 600;
+async function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const selectedSize = sizes[document.getElementById('size').value];
+    let curX = 10; let curY = 10;
+    for (let photo of photos) {
+        for (let i = 0; i < photo.qty; i++) {
+            if (curX + selectedSize.w > 200) { curX = 10; curY += selectedSize.h + 2; }
+            if (curY + selectedSize.h > 285) { pdf.addPage(); curX = 10; curY = 10; }
+            pdf.addImage(photo.current, 'PNG', curX, curY, selectedSize.w, selectedSize.h);
+            curX += selectedSize.w + 2;
+        }
+    }
+    pdf.save("hasil-cetak-fnd.pdf");
 }
