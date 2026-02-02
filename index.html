@@ -1,522 +1,284 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>EditFoto - Cetak & Hapus BG</title>
-  <style>
-    :root { --b:#111; --g:#666; --bg:#f4f6f8; --card:#fff; --r:14px; }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--b);background:var(--bg)}
-    header{position:sticky;top:0;background:rgba(244,246,248,.9);backdrop-filter:blur(10px);border-bottom:1px solid #e7e7e7}
-    .wrap{max-width:980px;margin:0 auto;padding:14px 16px}
-    h1{font-size:18px;margin:0}
-    .sub{font-size:12px;color:var(--g);margin-top:4px}
-    .tabs{display:flex;gap:10px;margin-top:10px}
-    .tab{flex:1;border:1px solid #ddd;background:#fff;border-radius:999px;padding:10px 12px;font-weight:600;cursor:pointer}
-    .tab.active{border-color:#111;box-shadow:0 1px 0 #111 inset}
-    main{max-width:980px;margin:0 auto;padding:16px}
-    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
-    @media (max-width:920px){.grid{grid-template-columns:1fr}}
-    .card{background:var(--card);border:1px solid #e7e7e7;border-radius:var(--r);padding:14px;box-shadow:0 6px 18px rgba(0,0,0,.04)}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    label{font-size:12px;color:var(--g)}
-    select,input[type="range"]{width:100%}
-    .btn{border:1px solid #ddd;background:#fff;border-radius:12px;padding:10px 12px;font-weight:650;cursor:pointer}
-    .btn.primary{border-color:#111;background:#111;color:#fff}
-    .btn:disabled{opacity:.5;cursor:not-allowed}
-    .drop{
-      border:2px dashed #cfd6dd;border-radius:var(--r);padding:16px;text-align:center;
-      background:linear-gradient(#fff,#fff) padding-box, linear-gradient(90deg,#eaeaea,#f7f7f7) border-box;
-    }
-    .drop strong{display:block;margin-bottom:6px}
-    .hint{font-size:12px;color:var(--g)}
-    canvas{width:100%;background:#fafafa;border-radius:12px;border:1px solid #eee}
-    .kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-    .k{background:#fafafa;border:1px solid #eee;border-radius:12px;padding:10px}
-    .k b{display:block;font-size:13px}
-    .k span{font-size:12px;color:var(--g)}
-    .sep{height:1px;background:#eee;margin:12px 0}
-    .small{font-size:12px;color:var(--g);line-height:1.4}
-    .badge{display:inline-block;font-size:12px;background:#111;color:#fff;padding:4px 10px;border-radius:999px}
-    .warn{color:#9a4b00}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Foto – Pas Foto & 4R</title>
+
+<style>
+body{
+  margin:0;
+  font-family:system-ui,Arial,sans-serif;
+  background:#f3f5f7;
+  color:#111;
+}
+header{
+  position:sticky;top:0;
+  background:#fff;
+  border-bottom:1px solid #ddd;
+  padding:14px;
+}
+h1{margin:0;font-size:18px}
+.sub{font-size:12px;color:#666}
+
+.wrap{max-width:1100px;margin:auto;padding:16px}
+.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+
+.card{
+  background:#fff;
+  border-radius:14px;
+  padding:14px;
+  border:1px solid #ddd;
+}
+
+button,select,input{
+  padding:8px;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+
+button{
+  cursor:pointer;
+  background:#111;
+  color:#fff;
+  border:none;
+}
+button.secondary{
+  background:#fff;
+  color:#111;
+  border:1px solid #ccc;
+}
+
+.drop{
+  border:2px dashed #bbb;
+  border-radius:12px;
+  padding:20px;
+  text-align:center;
+  cursor:pointer;
+}
+
+canvas{
+  width:100%;
+  border-radius:12px;
+  border:1px solid #ddd;
+  background:#fafafa;
+}
+
+label{font-size:12px;color:#555}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.sep{height:1px;background:#eee;margin:12px 0}
+.small{font-size:12px;color:#666}
+</style>
 </head>
+
 <body>
 <header>
-  <div class="wrap">
-    <h1>EditFoto</h1>
-    <div class="sub">Gratis • Jalan di GitHub Pages • Cetak Foto & Hapus Background</div>
-
-    <div class="tabs">
-      <button id="tab-cetak" class="tab">🖨️ Cetak</button>
-      <button id="tab-bg" class="tab">🪄 Hapus BG</button>
-    </div>
-  </div>
+  <h1>Edit Foto</h1>
+  <div class="sub">Pas Foto Indonesia & 4R – Gratis (GitHub Pages)</div>
 </header>
 
-<main>
-  <div class="grid">
-    <section class="card">
-      <div class="drop" id="drop">
-        <strong>Masukkan Foto</strong>
-        <div class="hint">Klik untuk pilih file, atau drag & drop ke sini</div>
-        <input id="file" type="file" accept="image/*" style="display:none" />
-      </div>
+<div class="wrap">
+<div class="grid">
 
-      <div class="sep"></div>
-
-      <div class="kpi">
-        <div class="k"><b>File</b><span id="k-file">-</span></div>
-        <div class="k"><b>Ukuran</b><span id="k-size">-</span></div>
-        <div class="k"><b>Mode</b><span id="k-mode">-</span></div>
-      </div>
-
-      <div class="sep"></div>
-
-      <canvas id="cv" width="1200" height="800"></canvas>
-
-      <div class="sep"></div>
-
-      <div class="row">
-        <button class="btn primary" id="btn-download" disabled>⬇️ Download</button>
-        <button class="btn" id="btn-reset" disabled>↩️ Reset</button>
-        <span class="small">Tips: untuk hasil tajam, pilih foto resolusi tinggi.</span>
-      </div>
-    </section>
-
-    <aside class="card">
-      <!-- PANEL CETAK -->
-      <div id="panel-cetak">
-        <div class="row" style="justify-content:space-between">
-          <span class="badge">Mode Cetak</span>
-          <span class="small">Auto crop tengah</span>
-        </div>
-
-        <div class="sep"></div>
-
-        <label>Ukuran kertas / foto</label>
-        <select id="print-size">
-          <option value="a4">A4 (2480 x 3508 px) - 300dpi</option>
-          <option value="10x15">10 x 15 cm (1181 x 1772 px) - 300dpi</option>
-          <option value="4x6">4 x 6 inch (1200 x 1800 px)</option>
-          <option value="1x1">1 : 1 (1080 x 1080 px)</option>
-          <option value="story">Story 9:16 (1080 x 1920 px)</option>
-        </select>
-
-        <div class="sep"></div>
-
-        <label>Zoom (crop)</label>
-        <input id="zoom" type="range" min="1" max="2.5" step="0.01" value="1.15" />
-
-        <label style="margin-top:10px;display:block">Geser X</label>
-        <input id="panx" type="range" min="-1" max="1" step="0.001" value="0" />
-
-        <label style="margin-top:10px;display:block">Geser Y</label>
-        <input id="pany" type="range" min="-1" max="1" step="0.001" value="0" />
-
-        <div class="sep"></div>
-
-        <div class="row">
-          <button class="btn" id="btn-fit">Pas Tengah</button>
-          <button class="btn" id="btn-fill">Penuh</button>
-        </div>
-
-        <p class="small">
-          Ini buat cetak: pilih ukuran → atur zoom/geser → download JPG.
-        </p>
-      </div>
-
-      <!-- PANEL HAPUS BG -->
-      <div id="panel-bg" style="display:none">
-        <div class="row" style="justify-content:space-between">
-          <span class="badge">Mode Hapus BG</span>
-          <span class="small warn">agak berat di HP lama</span>
-        </div>
-
-        <div class="sep"></div>
-
-        <label>Output</label>
-        <select id="bg-output">
-          <option value="png">PNG transparan</option>
-          <option value="jpg-white">JPG background putih</option>
-        </select>
-
-        <div class="sep"></div>
-
-        <div class="row">
-          <button class="btn primary" id="btn-remove" disabled>🪄 Proses Hapus BG</button>
-          <button class="btn" id="btn-bg-demo">Contoh Cepat</button>
-        </div>
-
-        <p class="small">
-          Hapus background jalan di browser (tanpa server). Pertama kali proses, dia download model dulu (sekali aja) jadi mungkin lama.
-        </p>
-      </div>
-
-      <div class="sep"></div>
-      <p class="small">
-        Kalau lu mau versi “super ringan”, gue bisa bikin opsi hapus BG via layanan gratis (tinggal paste API key) — tapi ini versi full gratis dulu.
-      </p>
-    </aside>
+<!-- PREVIEW -->
+<div class="card">
+  <div class="drop" id="drop">
+    <b>Upload Foto</b>
+    <div class="small">Klik atau drag foto ke sini</div>
+    <input type="file" id="file" accept="image/*" hidden>
   </div>
-</main>
+
+  <div class="sep"></div>
+
+  <canvas id="cv" width="1200" height="800"></canvas>
+
+  <div class="sep"></div>
+
+  <div class="row">
+    <button id="download">⬇️ Download</button>
+    <button class="secondary" id="reset">↩️ Reset</button>
+  </div>
+</div>
+
+<!-- CONTROL -->
+<div class="card">
+  <label>Ukuran Cetak</label>
+  <select id="size">
+    <optgroup label="Pas Foto Indonesia (300dpi)">
+      <option value="2x3">2x3 cm</option>
+      <option value="3x4" selected>3x4 cm</option>
+      <option value="4x6cm">4x6 cm</option>
+    </optgroup>
+    <optgroup label="Foto Umum">
+      <option value="4r">4R / 10x15 cm</option>
+    </optgroup>
+  </select>
+
+  <div class="sep"></div>
+
+  <label>Cetak Banyak di A4 (khusus pas foto)</label>
+  <select id="copies">
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="4">4</option>
+    <option value="6" selected>6 (umum)</option>
+    <option value="8">8</option>
+    <option value="10">10</option>
+    <option value="12">12</option>
+  </select>
+
+  <label style="margin-top:10px">Jarak antar foto</label>
+  <input type="range" id="gap" min="0" max="60" value="18">
+
+  <div class="sep"></div>
+
+  <label>Zoom</label>
+  <input type="range" id="zoom" min="1" max="2" step="0.01" value="1.15">
+
+  <label>Geser X</label>
+  <input type="range" id="panx" min="-1" max="1" step="0.01" value="0">
+
+  <label>Geser Y</label>
+  <input type="range" id="pany" min="-1" max="1" step="0.01" value="0">
+
+  <div class="sep"></div>
+
+  <div class="small">
+    ✔ Pas foto auto jadi A4 banyak lembar  
+    ✔ 4R hasil single  
+    ✔ Aman refresh GitHub Pages
+  </div>
+</div>
+
+</div>
+</div>
 
 <script>
-  // ---------- STATE ----------
-  const MODE_KEY = "editfoto_mode";
-  let mode = localStorage.getItem(MODE_KEY) || "cetak"; // "cetak" | "bg"
+const cv = document.getElementById("cv");
+const ctx = cv.getContext("2d");
 
-  const els = {
-    tabCetak: document.getElementById("tab-cetak"),
-    tabBg: document.getElementById("tab-bg"),
-    panelCetak: document.getElementById("panel-cetak"),
-    panelBg: document.getElementById("panel-bg"),
-    drop: document.getElementById("drop"),
-    file: document.getElementById("file"),
-    cv: document.getElementById("cv"),
-    kFile: document.getElementById("k-file"),
-    kSize: document.getElementById("k-size"),
-    kMode: document.getElementById("k-mode"),
-    btnDownload: document.getElementById("btn-download"),
-    btnReset: document.getElementById("btn-reset"),
+const file = document.getElementById("file");
+const drop = document.getElementById("drop");
 
-    // cetak
-    printSize: document.getElementById("print-size"),
-    zoom: document.getElementById("zoom"),
-    panx: document.getElementById("panx"),
-    pany: document.getElementById("pany"),
-    btnFit: document.getElementById("btn-fit"),
-    btnFill: document.getElementById("btn-fill"),
+const sizeSel = document.getElementById("size");
+const copiesSel = document.getElementById("copies");
+const gapSel = document.getElementById("gap");
+const zoomSel = document.getElementById("zoom");
+const panxSel = document.getElementById("panx");
+const panySel = document.getElementById("pany");
 
-    // bg
-    bgOutput: document.getElementById("bg-output"),
-    btnRemove: document.getElementById("btn-remove"),
-    btnBgDemo: document.getElementById("btn-bg-demo"),
-  };
+let img = null;
 
-  const ctx = els.cv.getContext("2d");
-  let img = null;      // Image bitmap
-  let imgName = "-";
-  let removedBgCanvas = null; // canvas result BG remove
+const SIZE = {
+  "2x3": {w:236,h:354},
+  "3x4": {w:354,h:472},
+  "4x6cm": {w:472,h:709},
+  "4r": {w:1181,h:1772}
+};
 
-  function setMode(next) {
-    mode = next;
-    localStorage.setItem(MODE_KEY, mode);
+function setCanvas(w,h){
+  cv.width=w;cv.height=h;
+}
 
-    els.tabCetak.classList.toggle("active", mode === "cetak");
-    els.tabBg.classList.toggle("active", mode === "bg");
-    els.panelCetak.style.display = mode === "cetak" ? "block" : "none";
-    els.panelBg.style.display = mode === "bg" ? "block" : "none";
+function drawCover(x,y,w,h){
+  const iw=img.naturalWidth, ih=img.naturalHeight;
+  const zoom=parseFloat(zoomSel.value);
+  const panx=parseFloat(panxSel.value);
+  const pany=parseFloat(panySel.value);
 
-    els.kMode.textContent = mode === "cetak" ? "Cetak" : "Hapus BG";
+  const scale=Math.max(w/iw,h/ih)*zoom;
+  const sw=iw*scale, sh=ih*scale;
+  const dx=x+(w-sw)/2+panx*(Math.abs(w-sw)/2);
+  const dy=y+(h-sh)/2+pany*(Math.abs(h-sh)/2);
 
-    // Render ulang sesuai mode
-    render();
+  ctx.drawImage(img,dx,dy,sw,sh);
+}
+
+function render(){
+  if(!img){
+    setCanvas(1200,800);
+    ctx.fillStyle="#fff";
+    ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.fillStyle="#666";
+    ctx.font="20px system-ui";
+    ctx.fillText("Upload foto dulu bang 😄",40,60);
+    return;
   }
 
-  // ---------- CANVAS TARGET SIZES ----------
-  const TARGETS = {
-    a4: { w: 2480, h: 3508, label: "A4 2480x3508" },
-    "10x15": { w: 1181, h: 1772, label: "10x15 1181x1772" },
-    "4x6": { w: 1200, h: 1800, label: "4x6 1200x1800" },
-    "1x1": { w: 1080, h: 1080, label: "1:1 1080x1080" },
-    story: { w: 1080, h: 1920, label: "Story 1080x1920" },
-  };
+  const key=sizeSel.value;
+  const t=SIZE[key];
+  const isPasFoto=key!=="4r";
+  const copies=parseInt(copiesSel.value);
+  const gap=parseInt(gapSel.value);
 
-  function setCanvasSize(w, h) {
-    els.cv.width = w;
-    els.cv.height = h;
-    els.kSize.textContent = `${w} x ${h}px`;
-  }
+  if(isPasFoto && copies>1){
+    setCanvas(2480,3508);
+    ctx.fillStyle="#fff";
+    ctx.fillRect(0,0,cv.width,cv.height);
 
-  // ---------- IMAGE LOAD ----------
-  async function loadFile(file) {
-    if (!file) return;
-    imgName = file.name;
-    els.kFile.textContent = imgName;
+    const map={2:[2,1],4:[2,2],6:[3,2],8:[4,2],10:[5,2],12:[4,3]};
+    const [cols,rows]=map[copies]||[3,2];
 
-    const url = URL.createObjectURL(file);
-    const image = new Image();
-    image.decoding = "async";
-    image.src = url;
-    await image.decode();
-    URL.revokeObjectURL(url);
+    const totalW=cols*t.w+(cols-1)*gap;
+    const totalH=rows*t.h+(rows-1)*gap;
+    const sx=(cv.width-totalW)/2;
+    const sy=(cv.height-totalH)/2;
 
-    img = image;
-    removedBgCanvas = null;
-
-    els.btnDownload.disabled = false;
-    els.btnReset.disabled = false;
-    els.btnRemove.disabled = (mode !== "bg");
-
-    // set initial canvas based on mode
-    if (mode === "cetak") applyTargetFromSelect();
-    render();
-  }
-
-  // ---------- CETAK RENDER ----------
-  function applyTargetFromSelect() {
-    const t = TARGETS[els.printSize.value];
-    setCanvasSize(t.w, t.h);
-  }
-
-  function drawCover(imgEl, zoom=1.15, panx=0, pany=0) {
-    // cover strategy (center crop)
-    const cw = els.cv.width, ch = els.cv.height;
-    ctx.clearRect(0,0,cw,ch);
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0,0,cw,ch);
-
-    const iw = imgEl.naturalWidth, ih = imgEl.naturalHeight;
-    // base scale to cover
-    const scale = Math.max(cw/iw, ch/ih) * zoom;
-    const sw = iw * scale;
-    const sh = ih * scale;
-
-    // panning: panx/pany in [-1..1], move within leftover area
-    const dx = (cw - sw)/2 + panx * (Math.abs(cw - sw)/2);
-    const dy = (ch - sh)/2 + pany * (Math.abs(ch - sh)/2);
-
-    ctx.drawImage(imgEl, dx, dy, sw, sh);
-  }
-
-  function renderCetak() {
-    if (!img) {
-      // placeholder
-      setCanvasSize(1200, 800);
-      ctx.clearRect(0,0,els.cv.width, els.cv.height);
-      ctx.fillStyle="#fff"; ctx.fillRect(0,0,els.cv.width, els.cv.height);
-      ctx.fillStyle="#777"; ctx.font="20px system-ui";
-      ctx.fillText("Upload foto dulu, bang 😄", 40, 60);
-      return;
-    }
-    applyTargetFromSelect();
-    drawCover(img, parseFloat(els.zoom.value), parseFloat(els.panx.value), parseFloat(els.pany.value));
-  }
-
-  // ---------- BG REMOVE (Transformers.js) ----------
-  async function ensureRembg() {
-    if (window.__rembgReady) return;
-
-    // Load transformers.js from CDN
-    await new Promise((res, rej) => {
-      const s = document.createElement("script");
-      s.src = "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/dist/transformers.min.js";
-      s.onload = res;
-      s.onerror = rej;
-      document.head.appendChild(s);
-    });
-
-    // Set env to allow CDN models
-    window.transformers.env.allowLocalModels = false;
-
-    // Load pipeline
-    // Note: This model may be large; first time can take a while.
-    window.__rembgPipeline = await window.transformers.pipeline(
-      "image-segmentation",
-      "Xenova/segformer-b0-finetuned-ade-512-512",
-      { quantized: true }
-    );
-
-    window.__rembgReady = true;
-  }
-
-  function imageToCanvas(imgEl) {
-    const c = document.createElement("canvas");
-    c.width = imgEl.naturalWidth;
-    c.height = imgEl.naturalHeight;
-    const cctx = c.getContext("2d");
-    cctx.drawImage(imgEl, 0, 0);
-    return c;
-  }
-
-  async function removeBg() {
-    if (!img) return;
-    els.btnRemove.disabled = true;
-    els.btnRemove.textContent = "⏳ Proses...";
-
-    try {
-      await ensureRembg();
-
-      const inputCanvas = imageToCanvas(img);
-      const output = await window.__rembgPipeline(inputCanvas);
-
-      // output is an array of masks; we take the first
-      const mask = output[0].mask; // ImageData-like
-      const w = inputCanvas.width, h = inputCanvas.height;
-      const srcCtx = inputCanvas.getContext("2d");
-      const src = srcCtx.getImageData(0,0,w,h);
-
-      // Apply mask to alpha
-      const mdata = mask.data; // 0..255
-      for (let i=0; i<src.data.length; i+=4) {
-        const alpha = mdata[i/4]; // assuming 1 channel
-        src.data[i+3] = alpha;
+    for(let r=0;r<rows;r++){
+      for(let c=0;c<cols;c++){
+        const x=sx+c*(t.w+gap);
+        const y=sy+r*(t.h+gap);
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(x,y,t.w,t.h);
+        ctx.clip();
+        drawCover(x,y,t.w,t.h);
+        ctx.restore();
       }
-
-      const out = document.createElement("canvas");
-      out.width = w; out.height = h;
-      const outCtx = out.getContext("2d");
-      outCtx.putImageData(src, 0, 0);
-
-      removedBgCanvas = out;
-
-      // show preview scaled to current canvas (keep size reasonable)
-      // Use story size for preview by default
-      setCanvasSize(1080, 1080);
-      ctx.clearRect(0,0,els.cv.width, els.cv.height);
-
-      if (els.bgOutput.value === "jpg-white") {
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0,0,els.cv.width, els.cv.height);
-      } else {
-        // checkerboard effect (visual only)
-        const s=40;
-        for (let y=0;y<els.cv.height;y+=s){
-          for (let x=0;x<els.cv.width;x+=s){
-            ctx.fillStyle = ((x/s + y/s) % 2 === 0) ? "#eee" : "#fff";
-            ctx.fillRect(x,y,s,s);
-          }
-        }
-      }
-
-      // draw cover of removed canvas to preview
-      const tempImg = new Image();
-      tempImg.src = out.toDataURL("image/png");
-      await tempImg.decode();
-      drawCover(tempImg, 1.0, 0, 0);
-
-    } catch (e) {
-      alert("Gagal hapus BG. Coba ulang / pakai foto lebih kecil / device lebih kuat.\n\n" + e);
-      console.error(e);
-    } finally {
-      els.btnRemove.disabled = false;
-      els.btnRemove.textContent = "🪄 Proses Hapus BG";
     }
+    return;
   }
 
-  function renderBg() {
-    if (!img) {
-      setCanvasSize(1200, 800);
-      ctx.clearRect(0,0,els.cv.width, els.cv.height);
-      ctx.fillStyle="#fff"; ctx.fillRect(0,0,els.cv.width, els.cv.height);
-      ctx.fillStyle="#777"; ctx.font="20px system-ui";
-      ctx.fillText("Upload foto dulu, bang 😄", 40, 60);
-      return;
-    }
+  setCanvas(t.w,t.h);
+  ctx.fillStyle="#fff";
+  ctx.fillRect(0,0,cv.width,cv.height);
+  drawCover(0,0,cv.width,cv.height);
+}
 
-    // preview: show original while waiting
-    setCanvasSize(1080, 1080);
-    drawCover(img, 1.0, 0, 0);
-  }
+file.onchange=e=>{
+  const f=e.target.files[0];
+  if(!f)return;
+  img=new Image();
+  img.onload=render;
+  img.src=URL.createObjectURL(f);
+};
 
-  function render() {
-    els.btnRemove.disabled = !(mode === "bg" && img);
-    if (mode === "cetak") renderCetak();
-    else renderBg();
-  }
+drop.onclick=()=>file.click();
+drop.ondragover=e=>e.preventDefault();
+drop.ondrop=e=>{
+  e.preventDefault();
+  file.files=e.dataTransfer.files;
+  file.onchange({target:file});
+};
 
-  // ---------- DOWNLOAD ----------
-  function downloadCurrent() {
-    if (!img) return;
+[sizeSel,copiesSel,gapSel,zoomSel,panxSel,panySel].forEach(el=>{
+  el.oninput=render;
+});
 
-    let mime = "image/jpeg";
-    let filename = "hasil.jpg";
-    let dataUrl = null;
+document.getElementById("download").onclick=()=>{
+  const a=document.createElement("a");
+  a.href=cv.toDataURL("image/jpeg",0.95);
+  a.download="hasil.jpg";
+  a.click();
+};
 
-    if (mode === "bg" && removedBgCanvas) {
-      if (els.bgOutput.value === "png") {
-        mime = "image/png";
-        filename = "hasil-no-bg.png";
-        dataUrl = removedBgCanvas.toDataURL(mime);
-      } else {
-        // jpg white background
-        const c = document.createElement("canvas");
-        c.width = removedBgCanvas.width;
-        c.height = removedBgCanvas.height;
-        const cctx = c.getContext("2d");
-        cctx.fillStyle = "#fff";
-        cctx.fillRect(0,0,c.width,c.height);
-        cctx.drawImage(removedBgCanvas, 0, 0);
-        mime = "image/jpeg";
-        filename = "hasil-no-bg-putih.jpg";
-        dataUrl = c.toDataURL(mime, 0.95);
-      }
-    } else {
-      // cetak uses main canvas
-      const t = TARGETS[els.printSize.value];
-      filename = `cetak-${t.label.replaceAll(" ","-")}.jpg`;
-      dataUrl = els.cv.toDataURL("image/jpeg", 0.95);
-    }
-
-    const a = document.createElement("a");
-    a.href = dataUrl;
-    a.download = filename;
-    a.click();
-  }
-
-  function resetAll() {
-    img = null;
-    removedBgCanvas = null;
-    imgName = "-";
-    els.kFile.textContent = "-";
-    els.btnDownload.disabled = true;
-    els.btnReset.disabled = true;
-    render();
-  }
-
-  // ---------- EVENTS ----------
-  els.tabCetak.addEventListener("click", () => setMode("cetak"));
-  els.tabBg.addEventListener("click", () => setMode("bg"));
-
-  els.drop.addEventListener("click", () => els.file.click());
-  els.file.addEventListener("change", (e) => loadFile(e.target.files[0]));
-
-  // drag drop
-  els.drop.addEventListener("dragover", (e) => { e.preventDefault(); els.drop.style.opacity = 0.85; });
-  els.drop.addEventListener("dragleave", () => { els.drop.style.opacity = 1; });
-  els.drop.addEventListener("drop", (e) => {
-    e.preventDefault();
-    els.drop.style.opacity = 1;
-    const f = e.dataTransfer.files?.[0];
-    loadFile(f);
-  });
-
-  // cetak controls
-  els.printSize.addEventListener("change", render);
-  els.zoom.addEventListener("input", render);
-  els.panx.addEventListener("input", render);
-  els.pany.addEventListener("input", render);
-
-  els.btnFit.addEventListener("click", () => {
-    els.zoom.value = "1.0"; els.panx.value = "0"; els.pany.value = "0"; render();
-  });
-  els.btnFill.addEventListener("click", () => {
-    els.zoom.value = "1.25"; els.panx.value = "0"; els.pany.value = "0"; render();
-  });
-
-  // bg controls
-  els.btnRemove.addEventListener("click", removeBg);
-  els.bgOutput.addEventListener("change", () => {
-    // preview re-render if already removed
-    if (removedBgCanvas) {
-      // quick preview redraw by calling render() and keep removed
-      render();
-    }
-  });
-
-  els.btnBgDemo.addEventListener("click", () => {
-    alert("Demo: Upload foto dulu → klik 'Proses Hapus BG'. Pertama kali bisa lama karena download model.");
-  });
-
-  // download / reset
-  els.btnDownload.addEventListener("click", downloadCurrent);
-  els.btnReset.addEventListener("click", resetAll);
-
-  // init
-  setMode(mode);
+document.getElementById("reset").onclick=()=>{
+  img=null;
   render();
+};
+
+render();
 </script>
 </body>
 </html>
