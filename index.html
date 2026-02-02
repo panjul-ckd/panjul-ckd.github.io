@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Studio FnD Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@latest/dist/bundle.js"></script>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="logo">⚡ FnD <span>Pro</span></div>
+        <nav class="top-nav">
+            <button onclick="switchMode('cetak')" id="btn-mode-cetak" class="nav-link active">🖨️ Cetak</button>
+            <button onclick="switchMode('bg-remover')" id="btn-mode-bg" class="nav-link">✂️ Hapus BG</button>
+        </nav>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div id="loading" class="card">
+                <div class="loader-info">
+                    <span id="status-msg">Memproses...</span>
+                    <span id="percent-val">0%</span>
+                </div>
+                <div class="progress-bar"><div id="progress-fill"></div></div>
+            </div>
+
+            <div class="card upload-section">
+                <div id="control-cetak">
+                    <label>📏 Ukuran Pas Foto</label>
+                    <select id="size" onchange="updatePreview()">
+                        <option value="2x3">2 x 3 cm</option>
+                        <option value="3x4" selected>3 x 4 cm</option>
+                        <option value="4x6">4 x 6 cm</option>
+                        <option value="4R">4R (10x15)</option>
+                        <option value="8R">8R (20x25)</option>
+                    </select>
+                </div>
+                <label class="upload-btn">
+                    📤 Unggah Foto
+                    <input type="file" id="upload" accept="image/*" multiple onchange="handleUpload(event)" hidden>
+                </label>
+            </div>
+
+            <div id="photoListContainer"></div>
+
+            <button id="main-download-btn" class="btn-primary" onclick="generatePDF()">📥 Download PDF A4</button>
+
+            <div class="donation-card">
+                <p>☕ BUAT SAYA NGOPI</p>
+                <a href="https://link.dana.id/qr/ISI_NOMOR_DANA_ANDA" target="_blank" class="btn-dana">DANA: 085716012920</a>
+            </div>
+        </aside>
+
+        <main class="preview-area">
+            <div id="paper-view">
+                <div class="paper-container"><div id="paper" class="paper-a4"></div></div>
+            </div>
+            <div id="bg-welcome" class="hidden">
+                <div class="empty-state">Mode Hapus Background Aktif. Pilih warna di kiri.</div>
+            </div>
+        </main>
+    </div>
+
+    <canvas id="tempCanvas" style="display:none;"></canvas>
+    <script src="script.js"></script>
+</body>
+</html>
