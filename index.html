@@ -12,11 +12,9 @@
 
     <div class="sidebar">
         <h2>✨ Studio FnD</h2>
-        <p style="font-size: 13px; color: #64748b; margin: -10px 0 20px 0;">
-            Ubah foto menjadi pas foto siap cetak secara instan.
-        </p>
+        <p class="subtitle">Ubah foto menjadi pas foto secara instan.</p>
         
-        <div id="loading">🚀 Sedang memproses FnD... Harap tunggu sebentar</div>
+        <div id="loading">🚀 Sedang memproses FnD... Harap tunggu</div>
 
         <div class="control-group">
             <label>📏 Langkah 1: Pilih Ukuran</label>
@@ -36,11 +34,13 @@
         
         <div id="photoListContainer"></div>
 
+        <hr>
+
         <button class="btn btn-print" onclick="generatePDF()">📥 Download PDF (Siap Cetak A4)</button>
     </div>
 
     <div class="main-content">
-        <h3 style="margin-bottom: 15px; color: #1e293b;">Preview Kertas A4</h3>
+        <h3>Preview Kertas A4</h3>
         <div class="paper-container">
             <div id="paper" class="paper-a4"></div>
         </div>
