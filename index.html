@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio Foto AI Pro</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@latest/dist/bundle.js"></script>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>📸 Studio Foto AI</h2>
+        <div id="loading">⏳ Sedang Memproses AI...</div>
+
+        <div class="control-group">
+            <label>Pilih Ukuran:</label>
+            <select id="size" onchange="updatePreview()">
+                <optgroup label="Pas Foto">
+                    <option value="2x3">2 x 3 cm</option>
+                    <option value="3x4" selected>3 x 4 cm</option>
+                    <option value="4x6">4 x 6 cm</option>
+                </optgroup>
+                <optgroup label="Foto Besar">
+                    <option value="4R">4R (10x15 cm)</option>
+                    <option value="8R">8R (20x25 cm)</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label>Upload Foto:</label>
+            <input type="file" id="upload" accept="image/*" multiple onchange="handleUpload(event)">
+        </div>
+        
+        <div id="photoListContainer"></div>
+
+        <button class="btn btn-print" onclick="generatePDF()">📥 Download PDF A4</button>
+    </div>
+
+    <div class="main-content">
+        <h3>Preview Kertas A4</h3>
+        <div class="paper-container">
+            <div id="paper" class="paper-a4"></div>
+        </div>
+    </div>
+
+    <canvas id="tempCanvas" style="display:none;"></canvas>
+    <script src="script.js"></script>
+</body>
+</html>

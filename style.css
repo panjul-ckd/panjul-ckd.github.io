@@ -1,0 +1,40 @@
+:root {
+    --a4-width: 90vw;
+    --a4-ratio: 1.414;
+    --primary: #007bff;
+}
+
+@media (min-width: 1024px) { :root { --a4-width: 500px; } }
+
+body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; padding: 15px; display: flex; flex-direction: column; gap: 20px; }
+
+@media (min-width: 1024px) {
+    body { flex-direction: row; padding: 30px; justify-content: center; }
+    .sidebar { width: 400px; position: sticky; top: 20px; height: 90vh; }
+}
+
+.sidebar { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow-y: auto; }
+
+.control-group { margin-bottom: 15px; }
+
+.photo-item { display: flex; gap: 10px; background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #eee; align-items: center; }
+
+.photo-item img { width: 60px; height: 80px; object-fit: cover; border-radius: 4px; }
+
+.bg-btn { padding: 5px; border: 1px solid #ccc; cursor: pointer; font-size: 10px; border-radius: 4px; margin-right: 2px; }
+
+.paper-a4 {
+    width: var(--a4-width);
+    height: calc(var(--a4-width) * var(--a4-ratio));
+    background: white;
+    position: relative;
+    padding: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    border: 1px solid #ddd;
+}
+
+.preview-photo { position: absolute; background-size: cover; border: 0.1px solid #aaa; }
+
+.btn-print { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
+
+#loading { display: none; background: #fff3cd; color: #856404; padding: 10px; border-radius: 8px; margin-bottom: 10px; text-align: center; font-size: 12px; }
