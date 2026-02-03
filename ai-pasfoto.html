@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FnD • Pas Foto AI (Gratis)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Poppins:wght@600;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#f6f7fb;--card:#fff;--text:#0f172a;--muted:#64748b;--line:#e7eaf0;--shadow:0 18px 45px rgba(2,6,23,.10);--shadow2:0 10px 24px rgba(2,6,23,.10);--r:18px;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;color:var(--text);
+      background:radial-gradient(900px 500px at 15% -10%, rgba(109,40,217,.13), transparent 60%),
+                 radial-gradient(900px 500px at 115% 10%, rgba(34,197,94,.10), transparent 60%), var(--bg);}
+    header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+    .header-inner{max-width:1100px;margin:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+    .brand{font-family:Poppins,Inter,system-ui;font-weight:900;letter-spacing:.4px;font-size:20px;white-space:nowrap;}
+    .nav a{text-decoration:none;font-weight:900;font-size:13px;color:#0f172a;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:#fff;box-shadow:0 10px 22px rgba(2,6,23,.06);white-space:nowrap;}
+    .wrap{max-width:1100px;margin:auto;padding:16px}
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;box-shadow:var(--shadow);}
+    .card h3{margin:0 0 10px;font-family:Poppins,Inter,system-ui;font-weight:800;font-size:14px;color:var(--muted);letter-spacing:.3px;}
+    .drop{border:2px dashed #cfd6e3;border-radius:16px;padding:16px;text-align:center;cursor:pointer;user-select:none;
+      background:linear-gradient(180deg, rgba(109,40,217,.06), rgba(34,197,94,.04));
+      transition:transform .12s ease,border-color .12s ease,background .12s ease;}
+    .drop:hover{transform:translateY(-1px);border-color:rgba(109,40,217,.55);background:linear-gradient(180deg, rgba(109,40,217,.10), rgba(34,197,94,.06));}
+    .preview{margin-top:12px;background:#fff;padding:14px;border-radius:18px;box-shadow:var(--shadow2);border:1px solid var(--line);}
+    canvas{width:100%;display:block;border-radius:14px;border:1px solid rgba(15,23,42,.06);touch-action:none;cursor:grab;}
+    canvas:active{cursor:grabbing}
+    label{display:block;font-size:12px;color:var(--muted);margin-top:12px}
+    input,select,button{width:100%;padding:11px 12px;border-radius:16px;border:1px solid var(--line);background:#fff;color:var(--text);outline:none}
+    .row{display:flex;gap:10px;margin-top:10px}
+    button{border:0;font-weight:900;cursor:pointer;background:linear-gradient(90deg,#111827,#0f172a);color:#fff;box-shadow:0 14px 30px rgba(2,6,23,.18);transition:transform .12s ease,filter .12s ease;}
+    button:hover{transform:translateY(-1px);filter:brightness(1.02)}
+    button.secondary{background:#fff;color:#0f172a;border:1px solid var(--line);box-shadow:0 10px 22px rgba(2,6,23,.08);}
+    button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+    .chiprow{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .chip{padding:10px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:900;font-size:12px;box-shadow:0 10px 22px rgba(2,6,23,.06);user-select:none;}
+    .swatch{width:12px;height:12px;border-radius:999px;display:inline-block;margin-right:8px;border:1px solid rgba(15,23,42,.15);vertical-align:middle;}
+    .status{margin-top:10px;padding:10px 12px;border:1px solid var(--line);border-radius:16px;background:#fbfcff;font-size:12px;color:var(--muted);line-height:1.4}
+    .hint{text-align:center;margin-top:10px;font-size:12px;color:var(--muted)}
+    footer{text-align:center;padding:22px 16px}
+    footer .foot{font-family:Poppins,Inter,system-ui;font-weight:900;font-size:22px;letter-spacing:.8px;background:linear-gradient(90deg, rgba(109,40,217,1), rgba(34,197,94,.85));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  </style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="brand">FnD • Pas Foto AI (Gratis)</div>
+    <div class="nav"><a href="index.html">← Kembali ke Editor</a></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="grid">
+    <div class="card">
+      <h3>Preview</h3>
+
+      <div class="drop" id="drop">
+        Upload Foto (klik / drop)
+        <input type="file" id="file" accept="image/*" hidden />
+      </div>
+
+      <div class="status" id="status">
+        Status: belum ada foto.<br/>
+        Cara cepat: Upload → klik <b>Proses AI</b> → pilih warna (Putih/Merah/Biru) → Download.
+      </div>
+
+      <div class="preview"><canvas id="cv"></canvas></div>
+
+      <div class="hint">Tip: seret untuk geser • scroll/cubit 2 jari untuk zoom</div>
+
+      <div class="row">
+        <button id="btnAI" disabled>⚡ Proses AI</button>
+        <button id="btnReset" class="secondary" disabled>Reset Posisi</button>
+      </div>
+
+      <div class="row">
+        <button id="btnJpg" disabled>Download JPG</button>
+        <button id="btnPng" class="secondary" disabled>Download PNG</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Pengaturan Pas Foto</h3>
+
+      <label>Ukuran</label>
+      <select id="size" disabled>
+        <option value="2x3cm">2x3</option>
+        <option value="3x4cm" selected>3x4</option>
+        <option value="4x6cm">4x6</option>
+      </select>
+
+      <label>Warna background</label>
+      <input type="color" id="bg" value="#FFFFFF" disabled />
+
+      <div class="chiprow" id="chips">
+        <div class="chip" data-c="#FFFFFF"><span class="swatch" style="background:#fff"></span>Putih</div>
+        <div class="chip" data-c="#E53935"><span class="swatch" style="background:#E53935"></span>Merah</div>
+        <div class="chip" data-c="#1E88E5"><span class="swatch" style="background:#1E88E5"></span>Biru</div>
+        <div class="chip" data-c="#F5F5F5"><span class="swatch" style="background:#F5F5F5"></span>Abu</div>
+      </div>
+
+      <label>Kualitas JPG</label>
+      <select id="quality" disabled>
+        <option value="0.92">Normal</option>
+        <option value="0.95" selected>Bagus</option>
+        <option value="0.98">Maks</option>
+      </select>
+
+      <div class="status">
+        AI gratis pakai <b>Hugging Face Space</b> (bisa agak lama kalau server rame). citeturn2search7turn2search10<br/>
+        Kalau error karena antrian, coba lagi 1–2x atau refresh.
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer><div class="foot">BOLEHAN SAYA</div></footer>
+
+<script>
+  // === CONFIG: ganti kalau sewaktu-waktu Space berubah ===
+  // BRIA RMBG 2.0 Space (running on Zero)
+  const SPACE_BASE = "https://briaai-bria-rmbg-2-0.hf.space"; // citeturn2search10
+  // Endpoint umum Gradio:
+  const UPLOAD_EP = "/upload";
+  const PREDICT_EPS = ["/run/predict", "/api/predict"]; // fallback
+
+  const SIZE = { "2x3cm":[236,354], "3x4cm":[354,472], "4x6cm":[472,709] };
+  const clamp = (n,a,b)=>Math.max(a,Math.min(b,n));
+
+  const cv = document.getElementById("cv");
+  const ctx = cv.getContext("2d");
+  const drop = document.getElementById("drop");
+  const fileEl = document.getElementById("file");
+  const statusEl = document.getElementById("status");
+
+  const sizeEl = document.getElementById("size");
+  const bgEl = document.getElementById("bg");
+  const qEl = document.getElementById("quality");
+
+  const btnAI = document.getElementById("btnAI");
+  const btnReset = document.getElementById("btnReset");
+  const btnJpg = document.getElementById("btnJpg");
+  const btnPng = document.getElementById("btnPng");
+
+  const state = { size:"3x4cm", bg:"#FFFFFF", z:1, x:0, y:0 };
+  let originalImg = null;   // Image (as uploaded)
+  let cutoutImg = null;     // Image with transparent bg (from AI)
+
+  function setEnabled(on){
+    btnAI.disabled = !on;
+    btnReset.disabled = !on;
+    sizeEl.disabled = !on;
+    bgEl.disabled = !on;
+    qEl.disabled = !on;
+    btnJpg.disabled = !on;
+    btnPng.disabled = !on;
+  }
+
+  function setEnabledBeforeAI(on){
+    btnAI.disabled = !on;
+    btnReset.disabled = !on;
+    sizeEl.disabled = !on;
+    bgEl.disabled = !on;
+    qEl.disabled = !on;
+    btnJpg.disabled = true;
+    btnPng.disabled = true;
+  }
+
+  function computeCoverCrop(iw, ih, W, H, z, px, py){
+    const tr = W / H, ir = iw / ih;
+    let cw, ch;
+    if (ir > tr){ ch = ih; cw = ch * tr; }
+    else { cw = iw; ch = cw / tr; }
+    z = clamp(z, 1, 2.5);
+    cw /= z; ch /= z;
+    const bx = clamp(0.5 + px, 0, 1);
+    const by = clamp(0.5 + py, 0, 1);
+    const ox = (iw - cw) * bx;
+    const oy = (ih - ch) * by;
+    return { ox, oy, cw, ch };
+  }
+
+  function render(){
+    const [W,H] = SIZE[state.size];
+    cv.width = W; cv.height = H;
+
+    // background color
+    ctx.fillStyle = state.bg;
+    ctx.fillRect(0,0,W,H);
+
+    const img = cutoutImg || originalImg;
+    if(!img) return;
+
+    const iw = img.naturalWidth, ih = img.naturalHeight;
+    const c = computeCoverCrop(iw, ih, W, H, state.z, state.x, state.y);
+    ctx.drawImage(img, c.ox, c.oy, c.cw, c.ch, 0,0,W,H);
+  }
+
+  function resetPos(){
+    state.z = 1; state.x = 0; state.y = 0;
+    render();
+  }
+
+  drop.addEventListener("click", ()=> fileEl.click());
+  drop.addEventListener("dragover", (e)=>{ e.preventDefault(); });
+  drop.addEventListener("drop", async (e)=>{
+    e.preventDefault();
+    const f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if(f) await loadFile(f);
+  });
+
+  fileEl.addEventListener("change", async (e)=>{
+    const f = e.target.files && e.target.files[0];
+    if(f) await loadFile(f);
+    fileEl.value = "";
+  });
+
+  async function loadFile(f){
+    const im = new Image();
+    im.src = URL.createObjectURL(f);
+    await im.decode();
+    originalImg = im;
+    cutoutImg = null;
+    statusEl.innerHTML = "Status: foto masuk. Klik <b>⚡ Proses AI</b> untuk hapus background jadi transparan.";
+    setEnabledBeforeAI(true);
+    resetPos();
+  }
+
+  sizeEl.addEventListener("input", ()=>{ state.size = sizeEl.value; render(); });
+  bgEl.addEventListener("input", ()=>{ state.bg = bgEl.value; render(); });
+  document.getElementById("chips").addEventListener("click", (e)=>{
+    const chip = e.target.closest(".chip");
+    if(!chip || bgEl.disabled) return;
+    const c = chip.getAttribute("data-c");
+    bgEl.value = c;
+    state.bg = c;
+    render();
+  });
+
+  btnReset.addEventListener("click", resetPos);
+
+  // --- pan/zoom ---
+  let dragging=false,lastX=0,lastY=0;
+  cv.addEventListener("pointerdown",(e)=>{
+    if(!originalImg && !cutoutImg) return;
+    dragging=true; lastX=e.clientX; lastY=e.clientY;
+    cv.setPointerCapture(e.pointerId);
+  });
+  cv.addEventListener("pointermove",(e)=>{
+    if(!dragging) return;
+    const img = cutoutImg || originalImg;
+    if(!img) return;
+    const dx=e.clientX-lastX, dy=e.clientY-lastY;
+    lastX=e.clientX; lastY=e.clientY;
+
+    const [W,H]=SIZE[state.size];
+    const iw=img.naturalWidth, ih=img.naturalHeight;
+    const tr=W/H, ir=iw/ih;
+    let cw,ch;
+    if(ir>tr){ ch=ih; cw=ch*tr; } else { cw=iw; ch=cw/tr; }
+    const z=clamp(state.z,1,2.5);
+    cw/=z; ch/=z;
+    const ax=Math.max(1, iw-cw), ay=Math.max(1, ih-ch);
+
+    const dbx = -dx/ax, dby=-dy/ay;
+    const bx=clamp(0.5+state.x+dbx,0,1);
+    const by=clamp(0.5+state.y+dby,0,1);
+    state.x=bx-0.5; state.y=by-0.5;
+    render();
+  });
+  function end(){dragging=false;}
+  cv.addEventListener("pointerup",end);
+  cv.addEventListener("pointercancel",end);
+
+  cv.addEventListener("wheel",(e)=>{
+    const img = cutoutImg || originalImg;
+    if(!img) return;
+    e.preventDefault();
+    state.z = clamp(state.z + (-e.deltaY*0.0015), 1, 2.5);
+    render();
+  }, {passive:false});
+
+  // --- AI call (Gradio Space) ---
+  async function uploadToSpace(blob, filename){
+    const fd = new FormData();
+    fd.append("files", blob, filename);
+
+    const res = await fetch(SPACE_BASE + UPLOAD_EP, { method:"POST", body: fd });
+    if(!res.ok) throw new Error("Upload gagal: " + res.status);
+    const j = await res.json();
+    // Gradio biasanya balikin array path
+    const path = Array.isArray(j) ? j[0] : (j?.files?.[0] || j?.[0]);
+    if(!path) throw new Error("Upload OK tapi path kosong");
+    return path;
+  }
+
+  async function predictOnSpace(filePath, origName){
+    const payload = {
+      data: [{
+        path: filePath,
+        orig_name: origName || "image.png",
+        mime_type: "image/png"
+      }]
+    };
+
+    let lastErr = null;
+    for(const ep of PREDICT_EPS){
+      try{
+        const res = await fetch(SPACE_BASE + ep, {
+          method:"POST",
+          headers: { "Content-Type":"application/json" },
+          body: JSON.stringify(payload)
+        });
+        if(!res.ok) throw new Error("Predict gagal: " + res.status);
+        const j = await res.json();
+
+        // Gradio response: {data:[{name, data|path|url}] ...}
+        const out = (j && j.data) ? j.data[0] : null;
+        if(!out) throw new Error("Response kosong");
+
+        // Output bisa string path, atau object file
+        if(typeof out === "string") return out;
+        if(out.path) return out.path;
+        if(out.name) return out.name;
+        if(out.url) return out.url;
+
+        throw new Error("Format output tidak dikenali");
+      }catch(e){
+        lastErr = e;
+      }
+    }
+    throw lastErr || new Error("Predict gagal (unknown)");
+  }
+
+  async function fetchImageFromSpace(pathOrUrl){
+    // kalau sudah url absolut
+    const url = /^https?:\/\//i.test(pathOrUrl) ? pathOrUrl : (SPACE_BASE + "/file=" + encodeURIComponent(pathOrUrl));
+    const res = await fetch(url);
+    if(!res.ok) throw new Error("Ambil hasil gagal: " + res.status);
+    const blob = await res.blob();
+    const im = new Image();
+    im.src = URL.createObjectURL(blob);
+    await im.decode();
+    return im;
+  }
+
+  btnAI.addEventListener("click", async ()=>{
+    if(!originalImg) return;
+
+    btnAI.disabled = true;
+    statusEl.innerHTML = "Status: lagi proses AI... (kalau rame bisa agak lama)";
+
+    try{
+      // ambil blob dari originalImg (re-encode png supaya konsisten)
+      const tmp = document.createElement("canvas");
+      tmp.width = originalImg.naturalWidth;
+      tmp.height = originalImg.naturalHeight;
+      tmp.getContext("2d").drawImage(originalImg,0,0);
+      const blob = await new Promise(r=>tmp.toBlob(r,"image/png",1));
+
+      const upPath = await uploadToSpace(blob, "input.png");
+      // NOTE: sebagian space outputnya PNG transparan
+      const outPath = await predictOnSpace(upPath, "input.png");
+      const outImg = await fetchImageFromSpace(outPath);
+
+      cutoutImg = outImg;
+      statusEl.innerHTML = "Status: AI selesai ✅ Background sudah transparan. Sekarang pilih warna & Download.";
+      setEnabled(true);
+      render();
+    }catch(err){
+      console.error(err);
+      statusEl.innerHTML = "Gagal AI: " + (err?.message || err) + "<br/>Tips: refresh lalu coba lagi. Kalau tetap gagal, berarti Space lagi limit/antri.";
+      // tetap bisa pakai mode non-AI
+      btnAI.disabled = false;
+    }
+  });
+
+  function downloadCanvas(ext){
+    const q = parseFloat(qEl.value || "0.95");
+    const a = document.createElement("a");
+    if(ext === "png"){
+      // PNG (tetap ada bg warna di canvas; kalau mau PNG transparan, pakai cutoutImg langsung)
+      a.href = cv.toDataURL("image/png");
+      a.download = "FnD-pasfoto-ai-" + state.size + ".png";
+    }else{
+      a.href = cv.toDataURL("image/jpeg", q);
+      a.download = "FnD-pasfoto-ai-" + state.bg.replace("#","") + "-" + state.size + ".jpg";
+    }
+    a.click();
+  }
+
+  btnJpg.addEventListener("click", ()=>downloadCanvas("jpg"));
+  btnPng.addEventListener("click", ()=>downloadCanvas("png"));
+
+  // init
+  render();
+</script>
+</body>
+</html>
