@@ -1,403 +1,363 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FnD • Pas Foto AI (Gratis)</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Poppins:wght@600;800;900&display=swap" rel="stylesheet">
-  <style>
-    :root{--bg:#f6f7fb;--card:#fff;--text:#0f172a;--muted:#64748b;--line:#e7eaf0;--shadow:0 18px 45px rgba(2,6,23,.10);--shadow2:0 10px 24px rgba(2,6,23,.10);--r:18px;}
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;color:var(--text);
-      background:radial-gradient(900px 500px at 15% -10%, rgba(109,40,217,.13), transparent 60%),
-                 radial-gradient(900px 500px at 115% 10%, rgba(34,197,94,.10), transparent 60%), var(--bg);}
-    header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
-    .header-inner{max-width:1100px;margin:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
-    .brand{font-family:Poppins,Inter,system-ui;font-weight:900;letter-spacing:.4px;font-size:20px;white-space:nowrap;}
-    .nav a{text-decoration:none;font-weight:900;font-size:13px;color:#0f172a;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:#fff;box-shadow:0 10px 22px rgba(2,6,23,.06);white-space:nowrap;}
-    .wrap{max-width:1100px;margin:auto;padding:16px}
-    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
-    @media(max-width:900px){.grid{grid-template-columns:1fr}}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;box-shadow:var(--shadow);}
-    .card h3{margin:0 0 10px;font-family:Poppins,Inter,system-ui;font-weight:800;font-size:14px;color:var(--muted);letter-spacing:.3px;}
-    .drop{border:2px dashed #cfd6e3;border-radius:16px;padding:16px;text-align:center;cursor:pointer;user-select:none;
-      background:linear-gradient(180deg, rgba(109,40,217,.06), rgba(34,197,94,.04));
-      transition:transform .12s ease,border-color .12s ease,background .12s ease;}
-    .drop:hover{transform:translateY(-1px);border-color:rgba(109,40,217,.55);background:linear-gradient(180deg, rgba(109,40,217,.10), rgba(34,197,94,.06));}
-    .preview{margin-top:12px;background:#fff;padding:14px;border-radius:18px;box-shadow:var(--shadow2);border:1px solid var(--line);}
-    canvas{width:100%;display:block;border-radius:14px;border:1px solid rgba(15,23,42,.06);touch-action:none;cursor:grab;}
-    canvas:active{cursor:grabbing}
-    label{display:block;font-size:12px;color:var(--muted);margin-top:12px}
-    input,select,button{width:100%;padding:11px 12px;border-radius:16px;border:1px solid var(--line);background:#fff;color:var(--text);outline:none}
-    .row{display:flex;gap:10px;margin-top:10px}
-    button{border:0;font-weight:900;cursor:pointer;background:linear-gradient(90deg,#111827,#0f172a);color:#fff;box-shadow:0 14px 30px rgba(2,6,23,.18);transition:transform .12s ease,filter .12s ease;}
-    button:hover{transform:translateY(-1px);filter:brightness(1.02)}
-    button.secondary{background:#fff;color:#0f172a;border:1px solid var(--line);box-shadow:0 10px 22px rgba(2,6,23,.08);}
-    button:disabled{opacity:.45;cursor:not-allowed;transform:none}
-    .chiprow{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-    .chip{padding:10px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:900;font-size:12px;box-shadow:0 10px 22px rgba(2,6,23,.06);user-select:none;}
-    .swatch{width:12px;height:12px;border-radius:999px;display:inline-block;margin-right:8px;border:1px solid rgba(15,23,42,.15);vertical-align:middle;}
-    .status{margin-top:10px;padding:10px 12px;border:1px solid var(--line);border-radius:16px;background:#fbfcff;font-size:12px;color:var(--muted);line-height:1.4}
-    .hint{text-align:center;margin-top:10px;font-size:12px;color:var(--muted)}
-    footer{text-align:center;padding:22px 16px}
-    footer .foot{font-family:Poppins,Inter,system-ui;font-weight:900;font-size:22px;letter-spacing:.8px;background:linear-gradient(90deg, rgba(109,40,217,1), rgba(34,197,94,.85));-webkit-background-clip:text;background-clip:text;color:transparent;}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fnd BG Remover - Hapus & Ganti Latar Belakang</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #drop-area.drag-over {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+    </style>
 </head>
-<body>
-<header>
-  <div class="header-inner">
-    <div class="brand">FnD • Pas Foto AI (Gratis)</div>
-    <div class="nav"><a href="index.html">← Kembali ke Editor</a></div>
-  </div>
-</header>
+<body class="min-h-screen text-slate-900">
 
-<div class="wrap">
-  <div class="grid">
-    <div class="card">
-      <h3>Preview</h3>
+    <div class="max-w-5xl mx-auto px-4 py-12">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">Hapus Latar Belakang <span class="text-blue-600">Instan</span></h1>
+            <p class="text-slate-600 max-w-2xl mx-auto text-lg">Gunakan teknologi AI untuk menghapus latar belakang foto Anda dalam hitungan detik dan ganti dengan warna favorit Anda.</p>
+        </header>
 
-      <div class="drop" id="drop">
-        Upload Foto (klik / drop)
-        <input type="file" id="file" accept="image/*" hidden />
-      </div>
+        <main class="grid lg:grid-cols-2 gap-8">
+            <!-- Bagian Kiri: Kontrol & Unggah -->
+            <div class="space-y-6">
+                <div id="drop-area" class="glass-card rounded-3xl p-8 border-2 border-dashed border-slate-300 text-center transition-all duration-300 relative overflow-hidden group">
+                    <input type="file" id="file-input" class="hidden" accept="image/*">
+                    
+                    <div id="upload-placeholder" class="py-12">
+                        <div class="w-20 h-20 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Klik atau Seret Gambar</h3>
+                        <p class="text-slate-500">Mendukung JPG, PNG, WEBP</p>
+                    </div>
 
-      <div class="status" id="status">
-        Status: belum ada foto.<br/>
-        Cara cepat: Upload → klik <b>Proses AI</b> → pilih warna (Putih/Merah/Biru) → Download.
-      </div>
+                    <div id="original-preview-container" class="hidden">
+                        <img id="original-preview" class="max-h-80 mx-auto rounded-xl shadow-lg mb-4" src="" alt="Original Preview">
+                        <button onclick="resetUpload()" class="text-red-500 hover:text-red-600 font-medium text-sm flex items-center justify-center mx-auto gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Ganti Gambar
+                        </button>
+                    </div>
+                </div>
 
-      <div class="preview"><canvas id="cv"></canvas></div>
+                <!-- Kontrol Warna -->
+                <div class="glass-card rounded-3xl p-6">
+                    <label class="block text-sm font-semibold text-slate-700 mb-4 uppercase tracking-wider">Opsi Latar Belakang</label>
+                    <div class="flex flex-wrap gap-4 items-center">
+                        <div class="flex flex-wrap gap-2" id="color-presets">
+                            <!-- Preset Warna -->
+                            <button onclick="setColor('#ffffff')" class="w-10 h-10 rounded-full border border-slate-200 bg-white" title="Putih"></button>
+                            <button onclick="setColor('#000000')" class="w-10 h-10 rounded-full border border-slate-200 bg-black" title="Hitam"></button>
+                            <button onclick="setColor('#3b82f6')" class="w-10 h-10 rounded-full border border-slate-200 bg-blue-500" title="Biru"></button>
+                            <button onclick="setColor('#ef4444')" class="w-10 h-10 rounded-full border border-slate-200 bg-red-500" title="Merah"></button>
+                            <button onclick="setColor('#10b981')" class="w-10 h-10 rounded-full border border-slate-200 bg-emerald-500" title="Hijau"></button>
+                            <button onclick="setColor('transparent')" class="w-10 h-10 rounded-full border border-slate-200 bg-slate-100 flex items-center justify-center" title="Transparan">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="flex items-center gap-3 ml-auto">
+                            <span class="text-sm font-medium text-slate-600">Kustom:</span>
+                            <input type="color" id="custom-color" class="w-10 h-10 p-0 border-0 rounded cursor-pointer bg-transparent" value="#ffffff">
+                        </div>
+                    </div>
+                </div>
 
-      <div class="hint">Tip: seret untuk geser • scroll/cubit 2 jari untuk zoom</div>
+                <button id="process-btn" onclick="processImage()" disabled class="w-full py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-2xl shadow-xl shadow-blue-200 transition-all flex items-center justify-center gap-3">
+                    <span id="btn-text">Proses Gambar</span>
+                    <div id="btn-loader" class="loader hidden"></div>
+                </button>
+            </div>
 
-      <div class="row">
-        <button id="btnAI" disabled>⚡ Proses AI</button>
-        <button id="btnReset" class="secondary" disabled>Reset Posisi</button>
-      </div>
+            <!-- Bagian Kanan: Hasil -->
+            <div class="flex flex-col h-full">
+                <div class="glass-card rounded-3xl p-8 flex-grow flex flex-col items-center justify-center border-2 border-slate-100 relative min-h-[400px]">
+                    <div id="result-placeholder" class="text-center text-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 mx-auto mb-4 opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <p class="font-medium">Hasil akan muncul di sini</p>
+                    </div>
 
-      <div class="row">
-        <button id="btnJpg" disabled>Download JPG</button>
-        <button id="btnPng" class="secondary" disabled>Download PNG</button>
-      </div>
+                    <div id="result-container" class="hidden w-full h-full flex flex-col items-center">
+                        <div id="bg-canvas-wrapper" class="relative rounded-xl shadow-2xl overflow-hidden mb-6 max-h-[500px]">
+                            <img id="result-image" class="max-h-full block" src="" alt="Result Image">
+                        </div>
+                        
+                        <div class="flex gap-4 w-full">
+                            <button onclick="downloadResult()" class="flex-1 py-3 px-6 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0L8 8m4-4v12" />
+                                </svg>
+                                Unduh PNG
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Toast Notification Area -->
+        <div id="toast-container" class="fixed bottom-8 right-8 z-50"></div>
     </div>
 
-    <div class="card">
-      <h3>Pengaturan Pas Foto</h3>
+    <script>
+        const apiKey = ""; // API Key disediakan oleh lingkungan runtime
+        const fileInput = document.getElementById('file-input');
+        const dropArea = document.getElementById('drop-area');
+        const originalPreview = document.getElementById('original-preview');
+        const originalContainer = document.getElementById('original-preview-container');
+        const uploadPlaceholder = document.getElementById('upload-placeholder');
+        const processBtn = document.getElementById('process-btn');
+        const resultPlaceholder = document.getElementById('result-placeholder');
+        const resultContainer = document.getElementById('result-container');
+        const resultImage = document.getElementById('result-image');
+        const btnText = document.getElementById('btn-text');
+        const btnLoader = document.getElementById('btn-loader');
+        const customColor = document.getElementById('custom-color');
 
-      <label>Ukuran</label>
-      <select id="size" disabled>
-        <option value="2x3cm">2x3</option>
-        <option value="3x4cm" selected>3x4</option>
-        <option value="4x6cm">4x6</option>
-      </select>
+        let currentBase64 = null;
+        let selectedColor = "#ffffff";
+        let isTransparent = false;
 
-      <label>Warna background</label>
-      <input type="color" id="bg" value="#FFFFFF" disabled />
+        // Event Listeners for Upload
+        dropArea.onclick = () => fileInput.click();
+        
+        dropArea.ondragover = (e) => {
+            e.preventDefault();
+            dropArea.classList.add('drag-over');
+        };
 
-      <div class="chiprow" id="chips">
-        <div class="chip" data-c="#FFFFFF"><span class="swatch" style="background:#fff"></span>Putih</div>
-        <div class="chip" data-c="#E53935"><span class="swatch" style="background:#E53935"></span>Merah</div>
-        <div class="chip" data-c="#1E88E5"><span class="swatch" style="background:#1E88E5"></span>Biru</div>
-        <div class="chip" data-c="#F5F5F5"><span class="swatch" style="background:#F5F5F5"></span>Abu</div>
-      </div>
+        dropArea.ondragleave = () => {
+            dropArea.classList.remove('drag-over');
+        };
 
-      <label>Kualitas JPG</label>
-      <select id="quality" disabled>
-        <option value="0.92">Normal</option>
-        <option value="0.95" selected>Bagus</option>
-        <option value="0.98">Maks</option>
-      </select>
+        dropArea.ondrop = (e) => {
+            e.preventDefault();
+            dropArea.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file) handleFile(file);
+        };
 
-      <div class="status">
-        AI gratis pakai <b>Hugging Face Space</b> (bisa agak lama kalau server rame). citeturn2search7turn2search10<br/>
-        Kalau error karena antrian, coba lagi 1–2x atau refresh.
-      </div>
-    </div>
-  </div>
-</div>
+        fileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) handleFile(file);
+        };
 
-<footer><div class="foot">BOLEHAN SAYA</div></footer>
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showToast("Tolong unggah file gambar yang valid.", "error");
+                return;
+            }
 
-<script>
-  // === CONFIG: ganti kalau sewaktu-waktu Space berubah ===
-  // BRIA RMBG 2.0 Space (running on Zero)
-  const SPACE_BASE = "https://briaai-bria-rmbg-2-0.hf.space"; // citeturn2search10
-  // Endpoint umum Gradio:
-  const UPLOAD_EP = "/upload";
-  const PREDICT_EPS = ["/run/predict", "/api/predict"]; // fallback
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                currentBase64 = e.target.result;
+                originalPreview.src = currentBase64;
+                originalContainer.classList.remove('hidden');
+                uploadPlaceholder.classList.add('hidden');
+                processBtn.disabled = false;
+                
+                // Reset result if any
+                resultContainer.classList.add('hidden');
+                resultPlaceholder.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
 
-  const SIZE = { "2x3cm":[236,354], "3x4cm":[354,472], "4x6cm":[472,709] };
-  const clamp = (n,a,b)=>Math.max(a,Math.min(b,n));
+        function resetUpload() {
+            currentBase64 = null;
+            fileInput.value = "";
+            originalContainer.classList.add('hidden');
+            uploadPlaceholder.classList.remove('hidden');
+            processBtn.disabled = true;
+            resultContainer.classList.add('hidden');
+            resultPlaceholder.classList.remove('hidden');
+        }
 
-  const cv = document.getElementById("cv");
-  const ctx = cv.getContext("2d");
-  const drop = document.getElementById("drop");
-  const fileEl = document.getElementById("file");
-  const statusEl = document.getElementById("status");
+        function setColor(color) {
+            if (color === 'transparent') {
+                isTransparent = true;
+                selectedColor = "transparent";
+            } else {
+                isTransparent = false;
+                selectedColor = color;
+                customColor.value = color;
+            }
+            
+            // Highlight selected preset (simple visual cue)
+            const buttons = document.querySelectorAll('#color-presets button');
+            buttons.forEach(btn => btn.classList.remove('ring-2', 'ring-blue-400', 'ring-offset-2'));
+            event.target.closest('button')?.classList.add('ring-2', 'ring-blue-400', 'ring-offset-2');
+        }
 
-  const sizeEl = document.getElementById("size");
-  const bgEl = document.getElementById("bg");
-  const qEl = document.getElementById("quality");
+        customColor.oninput = (e) => {
+            isTransparent = false;
+            selectedColor = e.target.result;
+            // Clear presets highlight
+            const buttons = document.querySelectorAll('#color-presets button');
+            buttons.forEach(btn => btn.classList.remove('ring-2', 'ring-blue-400', 'ring-offset-2'));
+        };
 
-  const btnAI = document.getElementById("btnAI");
-  const btnReset = document.getElementById("btnReset");
-  const btnJpg = document.getElementById("btnJpg");
-  const btnPng = document.getElementById("btnPng");
+        async function processImage() {
+            if (!currentBase64) return;
 
-  const state = { size:"3x4cm", bg:"#FFFFFF", z:1, x:0, y:0 };
-  let originalImg = null;   // Image (as uploaded)
-  let cutoutImg = null;     // Image with transparent bg (from AI)
+            setLoading(true);
+            const base64Data = currentBase64.split(',')[1];
+            const mimeType = currentBase64.split(',')[0].split(':')[1].split(';')[0];
+            
+            let prompt = "Remove the background of this image and make it completely transparent. Maintain the high quality of the subject.";
+            if (!isTransparent) {
+                prompt = `Replace the background of this image with a solid flat ${selectedColor} background. Keep the subject unchanged and clean.`;
+            }
 
-  function setEnabled(on){
-    btnAI.disabled = !on;
-    btnReset.disabled = !on;
-    sizeEl.disabled = !on;
-    bgEl.disabled = !on;
-    qEl.disabled = !on;
-    btnJpg.disabled = !on;
-    btnPng.disabled = !on;
-  }
+            try {
+                const response = await callGeminiAPI(prompt, base64Data, mimeType);
+                if (response) {
+                    resultImage.src = `data:image/png;base64,${response}`;
+                    resultContainer.classList.remove('hidden');
+                    resultPlaceholder.classList.add('hidden');
+                    showToast("Gambar berhasil diproses!", "success");
+                }
+            } catch (error) {
+                console.error(error);
+                showToast("Terjadi kesalahan saat memproses gambar.", "error");
+            } finally {
+                setLoading(false);
+            }
+        }
 
-  function setEnabledBeforeAI(on){
-    btnAI.disabled = !on;
-    btnReset.disabled = !on;
-    sizeEl.disabled = !on;
-    bgEl.disabled = !on;
-    qEl.disabled = !on;
-    btnJpg.disabled = true;
-    btnPng.disabled = true;
-  }
+        async function callGeminiAPI(prompt, base64, mimeType, retries = 0) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`;
+            
+            const payload = {
+                contents: [{
+                    parts: [
+                        { text: prompt },
+                        { inlineData: { mimeType: mimeType, data: base64 } }
+                    ]
+                }],
+                generationConfig: {
+                    responseModalities: ['IMAGE']
+                }
+            };
 
-  function computeCoverCrop(iw, ih, W, H, z, px, py){
-    const tr = W / H, ir = iw / ih;
-    let cw, ch;
-    if (ir > tr){ ch = ih; cw = ch * tr; }
-    else { cw = iw; ch = cw / tr; }
-    z = clamp(z, 1, 2.5);
-    cw /= z; ch /= z;
-    const bx = clamp(0.5 + px, 0, 1);
-    const by = clamp(0.5 + py, 0, 1);
-    const ox = (iw - cw) * bx;
-    const oy = (ih - ch) * by;
-    return { ox, oy, cw, ch };
-  }
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
-  function render(){
-    const [W,H] = SIZE[state.size];
-    cv.width = W; cv.height = H;
+                if (!response.ok) {
+                    if (retries < 5) {
+                        const delay = Math.pow(2, retries) * 1000;
+                        await new Promise(r => setTimeout(r, delay));
+                        return callGeminiAPI(prompt, base64, mimeType, retries + 1);
+                    }
+                    throw new Error('Gagal menghubungi AI setelah beberapa percobaan.');
+                }
 
-    // background color
-    ctx.fillStyle = state.bg;
-    ctx.fillRect(0,0,W,H);
+                const data = await response.json();
+                const imagePart = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+                return imagePart ? imagePart.inlineData.data : null;
 
-    const img = cutoutImg || originalImg;
-    if(!img) return;
+            } catch (err) {
+                if (retries < 5) {
+                    const delay = Math.pow(2, retries) * 1000;
+                    await new Promise(r => setTimeout(r, delay));
+                    return callGeminiAPI(prompt, base64, mimeType, retries + 1);
+                }
+                throw err;
+            }
+        }
 
-    const iw = img.naturalWidth, ih = img.naturalHeight;
-    const c = computeCoverCrop(iw, ih, W, H, state.z, state.x, state.y);
-    ctx.drawImage(img, c.ox, c.oy, c.cw, c.ch, 0,0,W,H);
-  }
+        function setLoading(loading) {
+            if (loading) {
+                btnText.textContent = "Memproses...";
+                btnLoader.classList.remove('hidden');
+                processBtn.disabled = true;
+            } else {
+                btnText.textContent = "Proses Gambar";
+                btnLoader.classList.add('hidden');
+                processBtn.disabled = false;
+            }
+        }
 
-  function resetPos(){
-    state.z = 1; state.x = 0; state.y = 0;
-    render();
-  }
+        function downloadResult() {
+            if (!resultImage.src) return;
+            const link = document.createElement('a');
+            link.href = resultImage.src;
+            link.download = 'hasil_bg_remover.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
 
-  drop.addEventListener("click", ()=> fileEl.click());
-  drop.addEventListener("dragover", (e)=>{ e.preventDefault(); });
-  drop.addEventListener("drop", async (e)=>{
-    e.preventDefault();
-    const f = e.dataTransfer.files && e.dataTransfer.files[0];
-    if(f) await loadFile(f);
-  });
+        function showToast(message, type = "info") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-red-500' : 'bg-blue-500');
+            
+            toast.className = `${bgColor} text-white px-6 py-3 rounded-2xl shadow-lg mb-3 transform translate-y-10 opacity-0 transition-all duration-300 flex items-center gap-3`;
+            toast.innerHTML = `
+                <span class="font-medium">${message}</span>
+                <button onclick="this.parentElement.remove()" class="ml-auto hover:opacity-75">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Animation in
+            setTimeout(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+            }, 10);
 
-  fileEl.addEventListener("change", async (e)=>{
-    const f = e.target.files && e.target.files[0];
-    if(f) await loadFile(f);
-    fileEl.value = "";
-  });
-
-  async function loadFile(f){
-    const im = new Image();
-    im.src = URL.createObjectURL(f);
-    await im.decode();
-    originalImg = im;
-    cutoutImg = null;
-    statusEl.innerHTML = "Status: foto masuk. Klik <b>⚡ Proses AI</b> untuk hapus background jadi transparan.";
-    setEnabledBeforeAI(true);
-    resetPos();
-  }
-
-  sizeEl.addEventListener("input", ()=>{ state.size = sizeEl.value; render(); });
-  bgEl.addEventListener("input", ()=>{ state.bg = bgEl.value; render(); });
-  document.getElementById("chips").addEventListener("click", (e)=>{
-    const chip = e.target.closest(".chip");
-    if(!chip || bgEl.disabled) return;
-    const c = chip.getAttribute("data-c");
-    bgEl.value = c;
-    state.bg = c;
-    render();
-  });
-
-  btnReset.addEventListener("click", resetPos);
-
-  // --- pan/zoom ---
-  let dragging=false,lastX=0,lastY=0;
-  cv.addEventListener("pointerdown",(e)=>{
-    if(!originalImg && !cutoutImg) return;
-    dragging=true; lastX=e.clientX; lastY=e.clientY;
-    cv.setPointerCapture(e.pointerId);
-  });
-  cv.addEventListener("pointermove",(e)=>{
-    if(!dragging) return;
-    const img = cutoutImg || originalImg;
-    if(!img) return;
-    const dx=e.clientX-lastX, dy=e.clientY-lastY;
-    lastX=e.clientX; lastY=e.clientY;
-
-    const [W,H]=SIZE[state.size];
-    const iw=img.naturalWidth, ih=img.naturalHeight;
-    const tr=W/H, ir=iw/ih;
-    let cw,ch;
-    if(ir>tr){ ch=ih; cw=ch*tr; } else { cw=iw; ch=cw/tr; }
-    const z=clamp(state.z,1,2.5);
-    cw/=z; ch/=z;
-    const ax=Math.max(1, iw-cw), ay=Math.max(1, ih-ch);
-
-    const dbx = -dx/ax, dby=-dy/ay;
-    const bx=clamp(0.5+state.x+dbx,0,1);
-    const by=clamp(0.5+state.y+dby,0,1);
-    state.x=bx-0.5; state.y=by-0.5;
-    render();
-  });
-  function end(){dragging=false;}
-  cv.addEventListener("pointerup",end);
-  cv.addEventListener("pointercancel",end);
-
-  cv.addEventListener("wheel",(e)=>{
-    const img = cutoutImg || originalImg;
-    if(!img) return;
-    e.preventDefault();
-    state.z = clamp(state.z + (-e.deltaY*0.0015), 1, 2.5);
-    render();
-  }, {passive:false});
-
-  // --- AI call (Gradio Space) ---
-  async function uploadToSpace(blob, filename){
-    const fd = new FormData();
-    fd.append("files", blob, filename);
-
-    const res = await fetch(SPACE_BASE + UPLOAD_EP, { method:"POST", body: fd });
-    if(!res.ok) throw new Error("Upload gagal: " + res.status);
-    const j = await res.json();
-    // Gradio biasanya balikin array path
-    const path = Array.isArray(j) ? j[0] : (j?.files?.[0] || j?.[0]);
-    if(!path) throw new Error("Upload OK tapi path kosong");
-    return path;
-  }
-
-  async function predictOnSpace(filePath, origName){
-    const payload = {
-      data: [{
-        path: filePath,
-        orig_name: origName || "image.png",
-        mime_type: "image/png"
-      }]
-    };
-
-    let lastErr = null;
-    for(const ep of PREDICT_EPS){
-      try{
-        const res = await fetch(SPACE_BASE + ep, {
-          method:"POST",
-          headers: { "Content-Type":"application/json" },
-          body: JSON.stringify(payload)
-        });
-        if(!res.ok) throw new Error("Predict gagal: " + res.status);
-        const j = await res.json();
-
-        // Gradio response: {data:[{name, data|path|url}] ...}
-        const out = (j && j.data) ? j.data[0] : null;
-        if(!out) throw new Error("Response kosong");
-
-        // Output bisa string path, atau object file
-        if(typeof out === "string") return out;
-        if(out.path) return out.path;
-        if(out.name) return out.name;
-        if(out.url) return out.url;
-
-        throw new Error("Format output tidak dikenali");
-      }catch(e){
-        lastErr = e;
-      }
-    }
-    throw lastErr || new Error("Predict gagal (unknown)");
-  }
-
-  async function fetchImageFromSpace(pathOrUrl){
-    // kalau sudah url absolut
-    const url = /^https?:\/\//i.test(pathOrUrl) ? pathOrUrl : (SPACE_BASE + "/file=" + encodeURIComponent(pathOrUrl));
-    const res = await fetch(url);
-    if(!res.ok) throw new Error("Ambil hasil gagal: " + res.status);
-    const blob = await res.blob();
-    const im = new Image();
-    im.src = URL.createObjectURL(blob);
-    await im.decode();
-    return im;
-  }
-
-  btnAI.addEventListener("click", async ()=>{
-    if(!originalImg) return;
-
-    btnAI.disabled = true;
-    statusEl.innerHTML = "Status: lagi proses AI... (kalau rame bisa agak lama)";
-
-    try{
-      // ambil blob dari originalImg (re-encode png supaya konsisten)
-      const tmp = document.createElement("canvas");
-      tmp.width = originalImg.naturalWidth;
-      tmp.height = originalImg.naturalHeight;
-      tmp.getContext("2d").drawImage(originalImg,0,0);
-      const blob = await new Promise(r=>tmp.toBlob(r,"image/png",1));
-
-      const upPath = await uploadToSpace(blob, "input.png");
-      // NOTE: sebagian space outputnya PNG transparan
-      const outPath = await predictOnSpace(upPath, "input.png");
-      const outImg = await fetchImageFromSpace(outPath);
-
-      cutoutImg = outImg;
-      statusEl.innerHTML = "Status: AI selesai ✅ Background sudah transparan. Sekarang pilih warna & Download.";
-      setEnabled(true);
-      render();
-    }catch(err){
-      console.error(err);
-      statusEl.innerHTML = "Gagal AI: " + (err?.message || err) + "<br/>Tips: refresh lalu coba lagi. Kalau tetap gagal, berarti Space lagi limit/antri.";
-      // tetap bisa pakai mode non-AI
-      btnAI.disabled = false;
-    }
-  });
-
-  function downloadCanvas(ext){
-    const q = parseFloat(qEl.value || "0.95");
-    const a = document.createElement("a");
-    if(ext === "png"){
-      // PNG (tetap ada bg warna di canvas; kalau mau PNG transparan, pakai cutoutImg langsung)
-      a.href = cv.toDataURL("image/png");
-      a.download = "FnD-pasfoto-ai-" + state.size + ".png";
-    }else{
-      a.href = cv.toDataURL("image/jpeg", q);
-      a.download = "FnD-pasfoto-ai-" + state.bg.replace("#","") + "-" + state.size + ".jpg";
-    }
-    a.click();
-  }
-
-  btnJpg.addEventListener("click", ()=>downloadCanvas("jpg"));
-  btnPng.addEventListener("click", ()=>downloadCanvas("png"));
-
-  // init
-  render();
-</script>
+            // Auto remove
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+    </script>
 </body>
 </html>
