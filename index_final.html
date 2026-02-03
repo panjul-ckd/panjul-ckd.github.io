@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FnD Edit Foto</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Poppins:wght@600;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#f6f7fb;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#64748b;
+  --line:#e7eaf0;
+  --shadow: 0 18px 45px rgba(2,6,23,.10);
+  --shadow2: 0 10px 24px rgba(2,6,23,.10);
+  --r: 18px;
+  --accent:#6d28d9;
+  --accent2:#22c55e;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  color:var(--text);
+
+  background:
+    linear-gradient(
+      rgba(255,255,255,0.88),
+      rgba(255,255,255,0.88)
+    ),
+    url("bg-fnd.jpg") center / cover no-repeat fixed;
+
+}
+
+
+/* Header (clean) */
+header{
+  position:sticky; top:0; z-index:20;
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.header-inner{
+  max-width:1100px;
+  margin:auto;
+  padding:14px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.brand{
+  font-family: Poppins, Inter, system-ui;
+  font-weight:900;
+  letter-spacing:.4px;
+  font-size:22px;
+}
+
+/* Layout */
+.wrap{max-width:1100px;margin:auto;padding:16px}
+.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+
+/* Card */
+.card{
+  background: var(--card);
+  border:1px solid var(--line);
+  border-radius: var(--r);
+  padding:14px;
+  box-shadow: var(--shadow);
+}
+.card h3{
+  margin:0 0 10px;
+  font-family:Poppins, Inter, system-ui;
+  font-weight:800;
+  font-size:14px;
+  color:var(--muted);
+  letter-spacing:.3px;
+}
+
+/* Dropzone */
+.drop{
+  border:2px dashed #cfd6e3;
+  border-radius:16px;
+  padding:16px;
+  text-align:center;
+  cursor:pointer;
+  user-select:none;
+  background: linear-gradient(180deg, rgba(109,40,217,.06), rgba(34,197,94,.04));
+  transition: transform .12s ease, border-color .12s ease, background .12s ease;
+}
+.drop:hover{
+  transform: translateY(-1px);
+  border-color: rgba(109,40,217,.55);
+  background: linear-gradient(180deg, rgba(109,40,217,.10), rgba(34,197,94,.06));
+}
+
+/* Tray thumbs */
+.tray{display:flex;gap:10px;overflow:auto;margin:12px 0;padding-bottom:4px}
+.tray::-webkit-scrollbar{height:8px}
+.tray::-webkit-scrollbar-thumb{background:#d8deea;border-radius:999px}
+.thumb{
+  width:72px;height:72px;
+  border-radius:16px;
+  overflow:hidden;
+  border:2px solid transparent;
+  cursor:pointer;
+  position:relative;
+  background:#f3f5fb;
+  box-shadow: 0 10px 20px rgba(2,6,23,.08);
+  flex:0 0 auto;
+  transition: transform .12s ease, border-color .12s ease;
+}
+.thumb:hover{transform: translateY(-1px)}
+.thumb.active{border-color: rgba(109,40,217,.9)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb-label{
+  position:absolute;bottom:6px;right:6px;
+  padding:3px 8px;border-radius:999px;
+  font-size:11px;font-weight:800;color:#fff;
+  background: linear-gradient(90deg, rgba(109,40,217,.95), rgba(34,197,94,.65));
+  box-shadow: 0 10px 20px rgba(2,6,23,.18);
+}
+.thumb-del{
+  position:absolute;
+  top:6px; right:6px;
+  width:22px; height:22px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.7);
+  background: rgba(15,23,42,.65);
+  color:#fff;
+  font-weight:900;
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  user-select:none;
+  box-shadow: 0 10px 20px rgba(2,6,23,.18);
+}
+.thumb-del:active{transform:scale(.96)}
+
+/* Print preview wrapper */
+.print-preview{
+  background:#fff;
+  padding:14px;
+  border-radius:18px;
+  box-shadow: var(--shadow2);
+  border:1px solid var(--line);
+}
+.print-preview.no-border{
+  padding:0;
+  background: transparent;
+  border:0;
+  box-shadow:none;
+}
+.print-preview canvas{
+  width:100%;
+  display:block;
+  background:#fff;
+  border-radius:14px;
+  border:1px solid rgba(15,23,42,.06);
+
+  touch-action:none;   /* pinch + drag */
+  cursor:grab;
+}
+.print-preview canvas:active{cursor:grabbing}
+
+/* Controls */
+label{
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+  margin-top:12px;
+}
+input, select, button{
+  width:100%;
+  padding:11px 12px;
+  border-radius:16px;
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--text);
+  outline:none;
+}
+select{
+  appearance:none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #94a3b8 50%),
+    linear-gradient(135deg, #94a3b8 50%, transparent 50%);
+  background-position: calc(100% - 18px) calc(1em + 2px), calc(100% - 13px) calc(1em + 2px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat:no-repeat;
+  padding-right:34px
+}
+
+/* Buttons */
+.row{display:flex;gap:10px;margin-top:10px}
+button{
+  border:0;
+  font-weight:900;
+  cursor:pointer;
+  background: linear-gradient(90deg, #111827, #0f172a);
+  color:#fff;
+  box-shadow: 0 14px 30px rgba(2,6,23,.18);
+  transition: transform .12s ease, filter .12s ease;
+}
+button:hover{transform: translateY(-1px); filter: brightness(1.02)}
+button.secondary{
+  background:#fff;
+  color:#0f172a;
+  border:1px solid var(--line);
+  box-shadow: 0 10px 22px rgba(2,6,23,.08);
+}
+button.secondary:hover{filter:none}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+/* Toggle border */
+.toggle{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:12px;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#fbfcff;
+}
+.toggle .t-left{display:flex;flex-direction:column;gap:2px}
+.toggle .t-left b{font-family:Poppins, Inter, system-ui;font-size:13px}
+.toggle .t-left span{font-size:12px;color:var(--muted)}
+.switch{
+  width:52px;height:30px;border-radius:999px;
+  background:#e5e7eb;
+  position:relative;
+  flex:0 0 auto;
+  cursor:pointer;
+  border:1px solid var(--line);
+}
+.switch::after{
+  content:"";
+  position:absolute;top:3px;left:3px;
+  width:24px;height:24px;border-radius:999px;
+  background:#fff;
+  box-shadow: 0 8px 18px rgba(2,6,23,.18);
+  transition:left .15s ease;
+}
+.switch.on{
+  background: linear-gradient(90deg, rgba(109,40,217,.95), rgba(34,197,94,.80));
+  border-color: rgba(109,40,217,.25);
+}
+.switch.on::after{left:24px}
+
+/* Hint + Tip */
+.hint{text-align:center;margin-top:10px;font-size:12px;color:var(--muted)}
+.tip{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
+
+/* Footer */
+footer{text-align:center;padding:22px 16px}
+footer .foot{
+  font-family:Poppins, Inter, system-ui;
+  font-weight:900;
+  font-size:22px;
+  letter-spacing:.8px;
+  background: linear-gradient(90deg, rgba(109,40,217,1), rgba(34,197,94,.85));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+/* ===== Tambahan footer: link Gemini + donasi (AMAN, gak ganggu style lama) ===== */
+.footer-extra{
+  margin-top:10px;
+}
+
+.footer-extra .footer-link{
+  display:inline-block;
+  padding:10px 16px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:13px;
+  text-decoration:none;
+  color:#fff;
+  background: linear-gradient(90deg, rgba(109,40,217,.95), rgba(34,197,94,.85));
+  box-shadow: 0 10px 22px rgba(2,6,23,.16);
+  transition: transform .12s ease, filter .12s ease;
+}
+.footer-extra .footer-link:hover{
+  transform: translateY(-1px);
+  filter: brightness(1.03);
+}
+
+.footer-extra .footer-safe{
+  margin-top:8px;
+  font-size:11px;
+  color:#64748b;
+  text-align:center;
+}
+
+/* bar bawah: kiri–kanan (biar gak semua tengah) */
+.footer-extra .footer-bottom{
+  margin-top:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  text-align:left; /* override text-align center dari footer */
+}
+
+.footer-extra .footer-left{
+  font-size:11px;
+  color:#64748b;
+}
+
+.footer-extra .footer-donate{
+  margin-left:auto;
+  text-align:right;
+}
+
+.footer-extra .footer-donate a{
+  font-size:11px;
+  color:#64748b;
+  text-decoration:none;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px dashed rgba(100,116,139,.35);
+  transition: all .15s ease;
+}
+.footer-extra .footer-donate a:hover{
+  color:#0f172a;
+  border-color: rgba(109,40,217,.6);
+  background: rgba(109,40,217,.06);
+}
+
+@media(max-width:600px){
+  .footer-extra .footer-bottom{
+    flex-direction:column;
+    text-align:center;
+  }
+  .footer-extra .footer-donate{
+    margin-left:0;
+    text-align:center;
+  }
+}
+
+</style>
+</head>
+
+<body>
+<header>
+  <div class="header-inner">
+    <div class="brand">FnD Edit Foto</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="grid">
+
+    <!-- PREVIEW -->
+    <div class="card">
+      <h3>Preview</h3>
+
+      <div class="drop" id="drop">
+        Tambah Foto (bisa banyak sekaligus)
+        <input type="file" id="file" accept="image/*" multiple hidden />
+      </div>
+
+      <div class="tray" id="tray"></div>
+
+      <div class="print-preview" id="printWrap">
+        <canvas id="cv"></canvas>
+      </div>
+
+      <div id="modeHint" class="hint">Pratinjau hasil cetak (1 foto)</div>
+      <div class="tip">Tip: seret foto untuk geser • scroll/cubit 2 jari untuk zoom</div>
+
+      <div class="row">
+        <button id="btnDl" disabled>Download</button>
+        <button id="btnA4" class="secondary" disabled>Preview A4</button>
+      </div>
+    </div>
+
+    <!-- CONTROL -->
+    <div class="card">
+      <h3>Pengaturan</h3>
+
+      <div class="toggle">
+        <div class="t-left">
+          <b>Tampilkan pinggiran cetak</b>
+          <span>Supaya kelihatan “hasil cetak” sebelum download</span>
+        </div>
+        <div class="switch on" id="borderSwitch" role="switch" aria-checked="true"></div>
+      </div>
+
+      <label>Ukuran Foto</label>
+      <select id="size">
+        <optgroup label="Pas Foto Indonesia (cm)">
+          <option value="2x3cm">2x3</option>
+          <option value="3x4cm" selected>3x4</option>
+          <option value="4x6cm">4x6</option>
+        </optgroup>
+
+        <optgroup label="Ukuran R (print foto)">
+          <option value="1r">1R</option>
+          <option value="2r">2R</option>
+          <option value="3r">3R</option>
+          <option value="4r">4R</option>
+          <option value="5r">5R</option>
+          <option value="6r">6R</option>
+          <option value="7r">7R</option>
+          <option value="8r">8R</option>
+        </optgroup>
+      </select>
+
+      <label>Jumlah Cetak A4 (objek ini)</label>
+      <input type="number" id="copies" min="0" value="0" />
+
+      <button id="dup" class="secondary" style="margin-top:10px" disabled>Duplikat Ukuran</button>
+      <button id="delActive" class="secondary" style="margin-top:10px" disabled>Hapus Objek Aktif</button>
+
+      <div class="row">
+        <button id="dlA4" disabled>Download A4 JPG</button>
+        <button id="dlPDF" class="secondary" disabled>Download PDF</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <!-- Tambahan: tombol Gemini + info aman + donasi -->
+  <div class="footer-extra">
+    <a class="footer-link"
+       href="https://gemini.google.com/share/d726d144f51a"
+       target="_blank"
+       rel="noopener noreferrer">
+      Ganti warna latar
+    </a>
+
+    <div class="footer-safe">
+      (butuh login Google Gemini, ini aman kok)
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-left"></div>
+
+      <div class="footer-donate">
+        <a href="https://link.dana.id/qr/085716012920"
+           target="_blank"
+           rel="noopener noreferrer">
+          ☕ Buat saya ngopi
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer asli: BOLEHAN SAYA (tetap pakai style lama) -->
+  <div class="foot">BOLEHAN SAYA</div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const cv = document.getElementById("cv");
+const ctx = cv.getContext("2d");
+
+const tray = document.getElementById("tray");
+const file = document.getElementById("file");
+
+const size = document.getElementById("size");
+const copies = document.getElementById("copies");
+
+const btnDl = document.getElementById("btnDl");
+const btnA4 = document.getElementById("btnA4");
+const dlA4 = document.getElementById("dlA4");
+const dlPDF = document.getElementById("dlPDF");
+const dup = document.getElementById("dup");
+const delActive = document.getElementById("delActive");
+
+const modeHint = document.getElementById("modeHint");
+const printWrap = document.getElementById("printWrap");
+const borderSwitch = document.getElementById("borderSwitch");
+
+const SIZE = {
+  "2x3cm":[236,354],
+  "3x4cm":[354,472],
+  "4x6cm":[472,709],
+
+  "1r":[600,900],
+  "2r":[750,1050],
+  "3r":[1050,1500],
+  "4r":[1200,1800],
+  "5r":[1500,2100],
+  "6r":[1800,2400],
+  "7r":[2100,2700],
+  "8r":[2400,3000]
+};
+
+let photos = [];
+let active = 0;
+let modeA4 = false;
+let borderOn = true;
+
+const clamp = (n,a,b)=>Math.max(a,Math.min(b,n));
+
+function drawCover(p, x, y, w, h){
+  const img = p.img, iw = img.naturalWidth, ih = img.naturalHeight;
+
+  const tr = w/h, ir = iw/ih;
+  let cw, ch;
+  if (ir > tr){ ch = ih; cw = ch * tr; }
+  else { cw = iw; ch = cw / tr; }
+
+  const z = clamp(p.z ?? 1, 1, 2.5);
+  cw = cw / z; ch = ch / z;
+
+  const bx = clamp(0.5 + (p.x||0), 0, 1);
+  const by = clamp(0.5 + (p.y||0), 0, 1);
+
+  const ox = (iw - cw) * bx;
+  const oy = (ih - ch) * by;
+
+  ctx.drawImage(img, ox, oy, cw, ch, x, y, w, h);
+}
+
+function updateModeUI(){
+  if (modeA4){
+    btnA4.textContent = "Kembali";
+    modeHint.textContent = "Pratinjau kertas A4 (untuk cetak banyak)";
+    printWrap.classList.add("no-border");
+  } else {
+    btnA4.textContent = "Preview A4";
+    modeHint.textContent = "Pratinjau hasil cetak (1 foto)";
+    printWrap.classList.toggle("no-border", !borderOn);
+  }
+}
+
+function render(){
+  if (!photos.length) return;
+
+  btnDl.disabled = false;
+  btnA4.disabled = false;
+  dup.disabled = false;
+  delActive.disabled = false;
+
+  updateModeUI();
+
+  if (modeA4){
+    renderA4();
+    return;
+  }
+
+  const p = photos[active];
+  const [w,h] = SIZE[p.size];
+
+  cv.width = w; cv.height = h;
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0,0,w,h);
+  drawCover(p,0,0,w,h);
+}
+
+function renderA4(){
+  cv.width = 2480;
+  cv.height = 3508;
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0,0,cv.width,cv.height);
+
+  let x=80, y=80, rowH=0;
+  for (const p of photos){
+    const [w,h] = SIZE[p.size];
+    for (let i=0;i<(p.copies||0);i++){
+      if (x+w > cv.width-80){ x=80; y += rowH + 20; rowH = 0; }
+      if (y+h > cv.height-80) return;
+      drawCover(p,x,y,w,h);
+      x += w + 20;
+      rowH = Math.max(rowH,h);
+    }
+  }
+}
+
+function loadUI(){
+  const p = photos[active];
+  size.value = p.size;
+  copies.value = p.copies ?? 0;
+}
+
+function saveUI(){
+  const p = photos[active];
+  p.size = size.value;
+  p.copies = parseInt(copies.value||"0",10);
+}
+
+function renderTray(){
+  tray.innerHTML = "";
+  photos.forEach((p,i)=>{
+    const d = document.createElement("div");
+    d.className = "thumb" + (i===active ? " active" : "");
+    d.innerHTML = `
+      <img src="${p.url}">
+      <div class="thumb-label">${p.size.toUpperCase()}</div>
+      <div class="thumb-del" title="Hapus">×</div>
+    `;
+    d.querySelector(".thumb-del").onclick = (ev)=>{
+      ev.stopPropagation();
+      removeAt(i);
+    };
+    tray.appendChild(d);
+  });
+}
+
+function resetWhenEmpty(){
+  active = 0;
+  modeA4 = false;
+  tray.innerHTML = "";
+  btnDl.disabled = true;
+  btnA4.disabled = true;
+  dup.disabled = true;
+  delActive.disabled = true;
+  dlA4.disabled = true;
+  dlPDF.disabled = true;
+  modeHint.textContent = "Pratinjau hasil cetak (1 foto)";
+  ctx.clearRect(0,0,cv.width,cv.height);
+  updateModeUI();
+}
+
+function removeAt(i){
+  if (i<0 || i>=photos.length) return;
+  photos.splice(i,1);
+
+  if (!photos.length){
+    resetWhenEmpty();
+    return;
+  }
+
+  if (active >= photos.length) active = photos.length - 1;
+
+  renderTray();
+  loadUI();
+  render();
+}
+
+tray.onclick = (e)=>{
+  const t = e.target.closest(".thumb");
+  if (!t) return;
+  const i = [...tray.children].indexOf(t);
+  if (i>=0){
+    active = i;
+    loadUI();
+    renderTray();
+    render();
+  }
+};
+
+file.onchange = async (e)=>{
+  for (const f of e.target.files){
+    const img = new Image();
+    img.src = URL.createObjectURL(f);
+    await img.decode();
+    photos.push({ img, url: img.src, size:"3x4cm", x:0, y:0, z:1, copies:0 });
+  }
+  active = photos.length - 1;
+  renderTray();
+  loadUI();
+  render();
+};
+
+document.getElementById("drop").onclick = ()=> file.click();
+
+// update per objek
+[size,copies].forEach(el=>{
+  el.oninput = ()=>{
+    if (!photos.length) return;
+    saveUI();
+    renderTray();
+    render();
+  };
+});
+
+// duplikat
+dup.onclick = ()=>{
+  if (!photos.length) return;
+  saveUI();
+  const p = photos[active];
+  photos.splice(active+1, 0, { ...p, copies:0 });
+  active++;
+  renderTray();
+  loadUI();
+  render();
+};
+
+// hapus aktif
+delActive.onclick = ()=>{
+  if (!photos.length) return;
+  removeAt(active);
+};
+
+// toggle A4
+btnA4.onclick = ()=>{
+  if (!photos.length) return;
+  modeA4 = !modeA4;
+  dlA4.disabled = !modeA4;
+  dlPDF.disabled = !modeA4;
+  render();
+};
+
+// download 1 foto / A4 jpg
+btnDl.onclick = ()=>{
+  const a = document.createElement("a");
+  a.href = cv.toDataURL("image/jpeg", 0.95);
+  a.download = modeA4 ? "FnD-A4.jpg" : "FnD-foto.jpg";
+  a.click();
+};
+dlA4.onclick = btnDl.onclick;
+
+// download PDF
+dlPDF.onclick = ()=>{
+  const pdf = new jspdf.jsPDF({ format:[cv.width, cv.height], unit:"px" });
+  pdf.addImage(cv.toDataURL("image/jpeg",0.95), "JPEG", 0, 0);
+  pdf.save("FnD-A4.pdf");
+};
+
+// toggle pinggiran cetak (UI only)
+function setBorder(on){
+  borderOn = on;
+  borderSwitch.classList.toggle("on", on);
+  borderSwitch.setAttribute("aria-checked", on ? "true" : "false");
+  if (!modeA4){
+    printWrap.classList.toggle("no-border", !on);
+  }
+}
+setBorder(true);
+borderSwitch.onclick = ()=> setBorder(!borderOn);
+
+// =========================
+// DRAG TO MOVE (geser langsung di foto)
+// =========================
+let dragging = false;
+let lastX = 0, lastY = 0;
+let pinching = false;
+
+function getCropParams(p){
+  const iw = p.img.naturalWidth, ih = p.img.naturalHeight;
+  const [W,H] = SIZE[p.size];
+  const tr = W/H, ir = iw/ih;
+
+  let cw, ch;
+  if (ir > tr){ ch = ih; cw = ch * tr; }
+  else { cw = iw; ch = cw / tr; }
+
+  const z = clamp(p.z ?? 1, 1, 2.5);
+  cw /= z; ch /= z;
+
+  const ax = Math.max(1, iw - cw);
+  const ay = Math.max(1, ih - ch);
+
+  return { ax, ay };
+}
+
+cv.addEventListener("pointerdown", (e)=>{
+  if(!photos.length || modeA4) return;
+  if(pinching) return;
+  dragging = true;
+  lastX = e.clientX;
+  lastY = e.clientY;
+  cv.setPointerCapture(e.pointerId);
+});
+
+cv.addEventListener("pointermove", (e)=>{
+  if(!dragging || !photos.length || modeA4) return;
+  if(pinching) return;
+
+  const dx = e.clientX - lastX;
+  const dy = e.clientY - lastY;
+  lastX = e.clientX;
+  lastY = e.clientY;
+
+  const p = photos[active];
+  const { ax, ay } = getCropParams(p);
+
+  const dbx = -dx / ax;
+  const dby = -dy / ay;
+
+  const bx = clamp(0.5 + (p.x || 0) + dbx, 0, 1);
+  const by = clamp(0.5 + (p.y || 0) + dby, 0, 1);
+
+  p.x = bx - 0.5;
+  p.y = by - 0.5;
+
+  render();
+});
+
+function endDrag(){ dragging = false; }
+cv.addEventListener("pointerup", endDrag);
+cv.addEventListener("pointercancel", endDrag);
+
+// =========================
+// ZOOM VIA SCROLL (Laptop) + PINCH (Android) - NO RESET
+// =========================
+cv.addEventListener("wheel", (e)=>{
+  if(!photos.length || modeA4) return;
+  e.preventDefault();
+  const p = photos[active];
+  const delta = -e.deltaY * 0.0015;
+  p.z = clamp((p.z || 1) + delta, 1, 2.5);
+  render();
+},{passive:false});
+
+let lastDist = null;
+let justPinched = false;
+
+function dist(t1, t2){
+  const dx = t1.clientX - t2.clientX;
+  const dy = t1.clientY - t2.clientY;
+  return Math.hypot(dx,dy);
+}
+
+cv.addEventListener("touchstart", (e)=>{
+  if(!photos.length || modeA4) return;
+  if(e.touches.length === 2){
+    pinching = true;
+    justPinched = true;
+    dragging = false;
+    lastDist = dist(e.touches[0], e.touches[1]);
+  }
+},{passive:false});
+
+cv.addEventListener("touchmove", (e)=>{
+  if(!photos.length || modeA4) return;
+  if(e.touches.length !== 2) return;
+
+  e.preventDefault();
+
+  const p = photos[active];
+  const d = dist(e.touches[0], e.touches[1]);
+
+  if(lastDist){
+    const diff = d - lastDist;
+    p.z = clamp((p.z || 1) + diff * 0.004, 1, 2.5);
+    render();
+  }
+  lastDist = d;
+},{passive:false});
+
+cv.addEventListener("touchend", (e)=>{
+  if(e.touches.length < 2){
+    pinching = false;
+    lastDist = null;
+    // justPinched tetap true sebentar, tapi tidak ada reset handler lagi
+    setTimeout(()=>{ justPinched = false; }, 50);
+  }
+},{passive:true});
+</script>
+</body>
+</html>
