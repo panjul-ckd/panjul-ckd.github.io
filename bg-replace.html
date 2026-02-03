@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FnD - Ganti Warna Background (Replace)</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Poppins:wght@600;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root{--bg:#f6f7fb;--card:#fff;--text:#0f172a;--muted:#64748b;--line:#e7eaf0;--shadow:0 18px 45px rgba(2,6,23,.10);--shadow2:0 10px 24px rgba(2,6,23,.10);--r:18px;}
+    *{box-sizing:border-box}
+    body{
+      margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;color:var(--text);
+      background:radial-gradient(900px 500px at 15% -10%, rgba(109,40,217,.13), transparent 60%),
+                 radial-gradient(900px 500px at 115% 10%, rgba(34,197,94,.10), transparent 60%),
+                 var(--bg);
+    }
+    header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+    .header-inner{max-width:1100px;margin:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+    .brand{font-family:Poppins,Inter,system-ui;font-weight:900;letter-spacing:.4px;font-size:20px;white-space:nowrap;}
+    .nav a{text-decoration:none;font-weight:900;font-size:13px;color:#0f172a;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:#fff;box-shadow:0 10px 22px rgba(2,6,23,.06);white-space:nowrap;}
+
+    .wrap{max-width:1100px;margin:auto;padding:16px}
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;box-shadow:var(--shadow);}
+    .card h3{margin:0 0 10px;font-family:Poppins,Inter,system-ui;font-weight:800;font-size:14px;color:var(--muted);letter-spacing:.3px;}
+
+    .drop{border:2px dashed #cfd6e3;border-radius:16px;padding:16px;text-align:center;cursor:pointer;user-select:none;
+      background:linear-gradient(180deg, rgba(109,40,217,.06), rgba(34,197,94,.04));
+      transition:transform .12s ease,border-color .12s ease,background .12s ease;
+    }
+    .drop:hover{transform:translateY(-1px);border-color:rgba(109,40,217,.55);background:linear-gradient(180deg, rgba(109,40,217,.10), rgba(34,197,94,.06));}
+
+    .preview{margin-top:12px;background:#fff;padding:14px;border-radius:18px;box-shadow:var(--shadow2);border:1px solid var(--line);}
+    canvas{width:100%;display:block;border-radius:14px;border:1px solid rgba(15,23,42,.06);touch-action:none;cursor:crosshair;}
+    .hint{margin-top:10px;font-size:12px;color:var(--muted);line-height:1.4}
+    label{display:block;font-size:12px;color:var(--muted);margin-top:12px}
+    input,select,button{width:100%;padding:11px 12px;border-radius:16px;border:1px solid var(--line);background:#fff;color:var(--text);outline:none}
+    .row{display:flex;gap:10px;margin-top:10px}
+    button{border:0;font-weight:900;cursor:pointer;background:linear-gradient(90deg,#111827,#0f172a);color:#fff;box-shadow:0 14px 30px rgba(2,6,23,.18);transition:transform .12s ease,filter .12s ease;}
+    button:hover{transform:translateY(-1px);filter:brightness(1.02)}
+    button.secondary{background:#fff;color:#0f172a;border:1px solid var(--line);box-shadow:0 10px 22px rgba(2,6,23,.08);}
+    .status{margin-top:10px;padding:10px 12px;border:1px solid var(--line);border-radius:16px;background:#fbfcff;font-size:12px;color:var(--muted);}
+    footer{text-align:center;padding:22px 16px}
+    footer .foot{font-family:Poppins,Inter,system-ui;font-weight:900;font-size:22px;letter-spacing:.8px;background:linear-gradient(90deg, rgba(109,40,217,1), rgba(34,197,94,.85));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="header-inner">
+    <div class="brand">FnD • Ganti BG (Replace)</div>
+    <div class="nav"><a href="index.html">← Kembali ke Editor</a></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="grid">
+    <div class="card">
+      <h3>Preview</h3>
+
+      <div class="drop" id="drop">
+        Upload Foto (klik / drop)
+        <input type="file" id="file" accept="image/*" hidden />
+      </div>
+
+      <div class="status" id="status">
+        Status: upload foto dulu. Setelah itu <b>klik background di foto</b> untuk ambil warna background asli, lalu pilih warna tujuan.
+      </div>
+
+      <div class="preview">
+        <canvas id="cv"></canvas>
+      </div>
+
+      <div class="row">
+        <button id="btnDl" class="secondary" disabled>Download JPG</button>
+        <button id="btnReset" class="secondary" disabled>Reset</button>
+      </div>
+
+      <div class="hint">
+        Ini beda dengan “cuma ngecat background canvas”.<br/>
+        Di sini background foto <b>diganti</b> pakai teknik chroma-key ringan (tanpa AI, tanpa CDN).<br/>
+        Paling bagus kalau background asli foto sudah relatif polos (putih/abu/biru/merah).
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Pengaturan Pas Foto</h3>
+
+      <label>Ukuran</label>
+      <select id="size" disabled>
+        <option value="2x3cm">2x3</option>
+        <option value="3x4cm" selected>3x4</option>
+        <option value="4x6cm">4x6</option>
+      </select>
+
+      <label>Warna tujuan (background baru)</label>
+      <input type="color" id="target" value="#FFFFFF" disabled />
+
+      <label>Warna background asli (diambil dari klik)</label>
+      <input type="color" id="key" value="#FFFFFF" disabled />
+
+      <label>Toleransi (seberapa “ngikut” warna background asli)</label>
+      <input type="range" id="tol" min="5" max="80" value="28" disabled />
+
+      <label>Soft edge (halusin pinggir rambut)</label>
+      <input type="range" id="soft" min="0" max="40" value="12" disabled />
+
+      <div class="hint" style="text-align:left">
+        Cara pakai cepat:<br/>
+        1) Upload foto<br/>
+        2) Klik area background (bukan muka/baju) → otomatis ngambil “warna kunci”<br/>
+        3) Pilih warna tujuan (Putih/Merah/Biru) → background langsung berubah
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer><div class="foot">BOLEHAN SAYA</div></footer>
+
+<script>
+  const cv = document.getElementById("cv");
+  const ctx = cv.getContext("2d", { willReadFrequently:true });
+
+  const drop = document.getElementById("drop");
+  const file = document.getElementById("file");
+  const statusEl = document.getElementById("status");
+
+  const sizeEl = document.getElementById("size");
+  const targetEl = document.getElementById("target");
+  const keyEl = document.getElementById("key");
+  const tolEl = document.getElementById("tol");
+  const softEl = document.getElementById("soft");
+
+  const btnDl = document.getElementById("btnDl");
+  const btnReset = document.getElementById("btnReset");
+
+  const SIZE = {
+    "2x3cm":[236,354],
+    "3x4cm":[354,472],
+    "4x6cm":[472,709]
+  };
+
+  const clamp = (n,a,b)=>Math.max(a,Math.min(b,n));
+
+  let img = null;
+  let state = { size:"3x4cm", z:1, x:0, y:0 };
+  let keyRGB = {r:255,g:255,b:255};
+  let targetRGB = {r:255,g:255,b:255};
+
+  function hexToRgb(h){
+    const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);
+    return m ? {r:parseInt(m[1],16), g:parseInt(m[2],16), b:parseInt(m[3],16)} : {r:255,g:255,b:255};
+  }
+  function rgbToHex({r,g,b}){
+    const to = (v)=>('0'+v.toString(16)).slice(-2);
+    return '#' + to(r) + to(g) + to(b);
+  }
+
+  function computeCoverCrop(iw, ih, W, H, z, px, py){
+    const tr = W / H, ir = iw / ih;
+    let cw, ch;
+    if (ir > tr){ ch = ih; cw = ch * tr; }
+    else { cw = iw; ch = cw / tr; }
+
+    z = clamp(z, 1, 2.5);
+    cw /= z; ch /= z;
+
+    const bx = clamp(0.5 + px, 0, 1);
+    const by = clamp(0.5 + py, 0, 1);
+
+    const ox = (iw - cw) * bx;
+    const oy = (ih - ch) * by;
+
+    return { ox, oy, cw, ch };
+  }
+
+  function enableUI(on){
+    sizeEl.disabled = !on;
+    targetEl.disabled = !on;
+    keyEl.disabled = !on;
+    tolEl.disabled = !on;
+    softEl.disabled = !on;
+    btnDl.disabled = !on;
+    btnReset.disabled = !on;
+  }
+
+  function resetAll(){
+    state.size = "3x4cm";
+    state.z = 1; state.x = 0; state.y = 0;
+    sizeEl.value = "3x4cm";
+    targetEl.value = "#FFFFFF";
+    keyEl.value = "#FFFFFF";
+    tolEl.value = "28";
+    softEl.value = "12";
+    keyRGB = hexToRgb(keyEl.value);
+    targetRGB = hexToRgb(targetEl.value);
+    render();
+  }
+
+  function render(){
+    const [W,H] = SIZE[state.size];
+    cv.width = W; cv.height = H;
+
+    // Fill target background first
+    ctx.fillStyle = targetEl.value;
+    ctx.fillRect(0,0,W,H);
+
+    if(!img) return;
+
+    // draw image to temp
+    const iw = img.naturalWidth, ih = img.naturalHeight;
+    const c = computeCoverCrop(iw, ih, W, H, state.z, state.x, state.y);
+
+    const tmp = document.createElement("canvas");
+    tmp.width = W; tmp.height = H;
+    const tctx = tmp.getContext("2d", { willReadFrequently:true });
+    tctx.drawImage(img, c.ox, c.oy, c.cw, c.ch, 0, 0, W, H);
+
+    const id = tctx.getImageData(0,0,W,H);
+    const d = id.data;
+
+    const key = keyRGB;
+    const target = targetRGB;
+    const tol = parseFloat(tolEl.value);       // 5..80
+    const soft = parseFloat(softEl.value);     // 0..40
+    const tol2 = tol*tol;
+
+    for(let i=0;i<d.length;i+=4){
+      const r=d[i], g=d[i+1], b=d[i+2];
+      const dr=r-key.r, dg=g-key.g, db=b-key.b;
+      const dist2 = dr*dr + dg*dg + db*db;
+
+      if(dist2 <= tol2){
+        // inside key range -> replace with target
+        d[i] = target.r; d[i+1]=target.g; d[i+2]=target.b; d[i+3]=255;
+      }else if(soft>0){
+        // soft edge: blend near boundary
+        const dist = Math.sqrt(dist2);
+        const edge = tol + soft;
+        if(dist < edge){
+          const t = (dist - tol) / soft; // 0..1
+          // t=0 means key -> full target, t=1 means keep original
+          const inv = 1 - t;
+          d[i]   = Math.round(r*t + target.r*inv);
+          d[i+1] = Math.round(g*t + target.g*inv);
+          d[i+2] = Math.round(b*t + target.b*inv);
+          d[i+3] = 255;
+        }
+      }
+    }
+
+    tctx.putImageData(id,0,0);
+    ctx.drawImage(tmp,0,0);
+  }
+
+  async function setImageFromFile(f){
+    const im = new Image();
+    im.src = URL.createObjectURL(f);
+    await im.decode();
+    img = im;
+    enableUI(true);
+    statusEl.innerHTML = 'Status: foto sudah masuk. <b>Klik background di foto</b> untuk ambil warna background asli.';
+    resetAll();
+    render();
+  }
+
+  drop.addEventListener("click", ()=> file.click());
+  file.addEventListener("change", async (e)=>{
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    await setImageFromFile(f);
+    file.value = "";
+  });
+  drop.addEventListener("dragover", (e)=>{ e.preventDefault(); });
+  drop.addEventListener("drop", async (e)=>{
+    e.preventDefault();
+    const f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if(!f) return;
+    await setImageFromFile(f);
+  });
+
+  sizeEl.addEventListener("input", ()=>{ state.size = sizeEl.value; render(); });
+  targetEl.addEventListener("input", ()=>{ targetRGB = hexToRgb(targetEl.value); render(); });
+  keyEl.addEventListener("input", ()=>{ keyRGB = hexToRgb(keyEl.value); render(); });
+  tolEl.addEventListener("input", render);
+  softEl.addEventListener("input", render);
+
+  btnReset.addEventListener("click", resetAll);
+
+  btnDl.addEventListener("click", ()=>{
+    const a = document.createElement("a");
+    a.href = cv.toDataURL("image/jpeg", 0.95);
+    a.download = "FnD-pasfoto-bg-" + targetEl.value.replace("#","") + "-" + state.size + ".jpg";
+    a.click();
+  });
+
+  // pick key color by clicking on canvas
+  cv.addEventListener("click", (e)=>{
+    if(!img) return;
+    const rect = cv.getBoundingClientRect();
+    const x = Math.round((e.clientX - rect.left) * (cv.width / rect.width));
+    const y = Math.round((e.clientY - rect.top) * (cv.height / rect.height));
+    const pixel = ctx.getImageData(x,y,1,1).data;
+    // NOTE: pixel here may already be processed; so sample from original temp by re-rendering once with current state and reading from temp is heavy.
+    // Practical: temporarily sample from original by drawing original to an offscreen canvas at current crop.
+    const [W,H] = [cv.width, cv.height];
+    const iw = img.naturalWidth, ih = img.naturalHeight;
+    const c = computeCoverCrop(iw, ih, W, H, state.z, state.x, state.y);
+    const tmp = document.createElement("canvas");
+    tmp.width = W; tmp.height = H;
+    const tctx = tmp.getContext("2d", { willReadFrequently:true });
+    tctx.drawImage(img, c.ox, c.oy, c.cw, c.ch, 0, 0, W, H);
+    const p = tctx.getImageData(x,y,1,1).data;
+    keyRGB = { r:p[0], g:p[1], b:p[2] };
+    keyEl.value = rgbToHex(keyRGB);
+    render();
+  });
+
+  // pan/zoom like editor (optional)
+  let dragging=false,lastX=0,lastY=0;
+  cv.addEventListener("pointerdown",(e)=>{
+    if(!img) return;
+    dragging=true; lastX=e.clientX; lastY=e.clientY;
+    cv.setPointerCapture(e.pointerId);
+  });
+  cv.addEventListener("pointermove",(e)=>{
+    if(!dragging || !img) return;
+    const dx=e.clientX-lastX, dy=e.clientY-lastY;
+    lastX=e.clientX; lastY=e.clientY;
+
+    const [W,H]=SIZE[state.size];
+    const iw=img.naturalWidth, ih=img.naturalHeight;
+    const tr=W/H, ir=iw/ih;
+    let cw,ch;
+    if(ir>tr){ ch=ih; cw=ch*tr; } else { cw=iw; ch=cw/tr; }
+    const z=clamp(state.z,1,2.5);
+    cw/=z; ch/=z;
+    const ax=Math.max(1, iw-cw), ay=Math.max(1, ih-ch);
+
+    const dbx = -dx/ax, dby=-dy/ay;
+    const bx=clamp(0.5+state.x+dbx,0,1);
+    const by=clamp(0.5+state.y+dby,0,1);
+    state.x=bx-0.5; state.y=by-0.5;
+    render();
+  });
+  function end(){dragging=false;}
+  cv.addEventListener("pointerup",end);
+  cv.addEventListener("pointercancel",end);
+  cv.addEventListener("wheel",(e)=>{
+    if(!img) return;
+    e.preventDefault();
+    state.z = clamp(state.z + (-e.deltaY*0.0015), 1, 2.5);
+    render();
+  }, {passive:false});
+
+  // init blank
+  render();
+</script>
+</body>
+</html>
