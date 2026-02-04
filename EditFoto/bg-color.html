@@ -1,353 +1,282 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FnD • Pas Foto AI (Gratis, Tanpa Server)</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Poppins:wght@600;800;900&display=swap" rel="stylesheet">
-  <style>
-    :root{--bg:#f6f7fb;--card:#fff;--text:#0f172a;--muted:#64748b;--line:#e7eaf0;--shadow:0 18px 45px rgba(2,6,23,.10);--shadow2:0 10px 24px rgba(2,6,23,.10);--r:18px;}
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;color:var(--text);
-      background:radial-gradient(900px 500px at 15% -10%, rgba(109,40,217,.13), transparent 60%),
-                 radial-gradient(900px 500px at 115% 10%, rgba(34,197,94,.10), transparent 60%), var(--bg);}
-    header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
-    .header-inner{max-width:1100px;margin:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
-    .brand{font-family:Poppins,Inter,system-ui;font-weight:900;letter-spacing:.4px;font-size:20px;white-space:nowrap;}
-    .nav a{text-decoration:none;font-weight:900;font-size:13px;color:#0f172a;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:#fff;box-shadow:0 10px 22px rgba(2,6,23,.06);white-space:nowrap;}
-    .wrap{max-width:1100px;margin:auto;padding:16px}
-    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
-    @media(max-width:900px){.grid{grid-template-columns:1fr}}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;box-shadow:var(--shadow);}
-    .card h3{margin:0 0 10px;font-family:Poppins,Inter,system-ui;font-weight:800;font-size:14px;color:var(--muted);letter-spacing:.3px;}
-    .drop{border:2px dashed #cfd6e3;border-radius:16px;padding:16px;text-align:center;cursor:pointer;user-select:none;
-      background:linear-gradient(180deg, rgba(109,40,217,.06), rgba(34,197,94,.04));
-      transition:transform .12s ease,border-color .12s ease,background .12s ease;}
-    .drop:hover{transform:translateY(-1px);border-color:rgba(109,40,217,.55);background:linear-gradient(180deg, rgba(109,40,217,.10), rgba(34,197,94,.06));}
-    .preview{margin-top:12px;background:#fff;padding:14px;border-radius:18px;box-shadow:var(--shadow2);border:1px solid var(--line);}
-    canvas{width:100%;display:block;border-radius:14px;border:1px solid rgba(15,23,42,.06);touch-action:none;cursor:grab;}
-    canvas:active{cursor:grabbing}
-    label{display:block;font-size:12px;color:var(--muted);margin-top:12px}
-    input,select,button{width:100%;padding:11px 12px;border-radius:16px;border:1px solid var(--line);background:#fff;color:var(--text);outline:none}
-    .row{display:flex;gap:10px;margin-top:10px}
-    button{border:0;font-weight:900;cursor:pointer;background:linear-gradient(90deg,#111827,#0f172a);color:#fff;box-shadow:0 14px 30px rgba(2,6,23,.18);transition:transform .12s ease,filter .12s ease;}
-    button:hover{transform:translateY(-1px);filter:brightness(1.02)}
-    button.secondary{background:#fff;color:#0f172a;border:1px solid var(--line);box-shadow:0 10px 22px rgba(2,6,23,.08);}
-    button:disabled{opacity:.45;cursor:not-allowed;transform:none}
-    .chiprow{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-    .chip{padding:10px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:900;font-size:12px;box-shadow:0 10px 22px rgba(2,6,23,.06);user-select:none;}
-    .swatch{width:12px;height:12px;border-radius:999px;display:inline-block;margin-right:8px;border:1px solid rgba(15,23,42,.15);vertical-align:middle;}
-    .status{margin-top:10px;padding:10px 12px;border:1px solid var(--line);border-radius:16px;background:#fbfcff;font-size:12px;color:var(--muted);line-height:1.4}
-    .hint{text-align:center;margin-top:10px;font-size:12px;color:var(--muted)}
-    footer{text-align:center;padding:22px 16px}
-    footer .foot{font-family:Poppins,Inter,system-ui;font-weight:900;font-size:22px;letter-spacing:.8px;background:linear-gradient(90deg, rgba(109,40,217,1), rgba(34,197,94,.85));-webkit-background-clip:text;background-clip:text;color:transparent;}
-    .small{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.45}
-    .warn{color:#b45309;font-weight:800}
-  </style>
+import React, { useState, useEffect } from 'react';
+import { Upload, Shirt, User, Sparkles, RefreshCcw, Image as ImageIcon, AlertCircle, CheckCircle2 } from 'lucide-react';
 
-  <!-- Import map biar bisa jalan di GitHub Pages tanpa bundler -->
-  <script type="importmap">
-  {
-    "imports": {
-      "@imgly/background-removal": "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/dist/index.mjs",
-      "onnxruntime-web": "https://esm.sh/onnxruntime-web"
+const App = () => {
+  const [personImage, setPersonImage] = useState(null);
+  const [clothesImage, setClothesImage] = useState(null);
+  const [personBase64, setPersonBase64] = useState("");
+  const [clothesBase64, setClothesBase64] = useState("");
+  const [resultImage, setResultImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [status, setStatus] = useState("");
+
+  const apiKey = ""; // API key disediakan secara otomatis di lingkungan ini
+
+  // Fungsi untuk menangani unggahan gambar
+  const handleImageUpload = (e, type) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result.split(',')[1];
+      if (type === 'person') {
+        setPersonImage(reader.result);
+        setPersonBase64(base64String);
+      } else {
+        setClothesImage(reader.result);
+        setClothesBase64(base64String);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Fungsi untuk memanggil AI Gemini
+  const generateTryOn = async () => {
+    if (!personBase64 || !clothesBase64) {
+      setError("Silakan unggah kedua foto (orang dan pakaian) terlebih dahulu.");
+      return;
     }
-  }
-  </script>
-</head>
-<body>
-<header>
-  <div class="header-inner">
-    <div class="brand">FnD • Pas Foto AI (Gratis)</div>
-    <div class="nav"><a href="index.html">← Kembali ke Editor</a></div>
-  </div>
-</header>
 
-<div class="wrap">
-  <div class="grid">
-    <div class="card">
-      <h3>Preview</h3>
+    setIsLoading(true);
+    setError(null);
+    setResultImage(null);
+    setStatus("Mengirim data ke AI...");
 
-      <div class="drop" id="drop">
-        Upload Foto (klik / drop)
-        <input type="file" id="file" accept="image/*" hidden />
-      </div>
+    const prompt = "Gantikan pakaian orang di foto pertama dengan pakaian yang ditunjukkan di foto kedua secara realistis. Pastikan posisi dan bentuk pakaian mengikuti bentuk tubuh orang tersebut dengan natural.";
 
-      <div class="status" id="status">
-        Status: belum ada foto.<br/>
-        Cara cepat: Upload → klik <b>⚡ Proses AI</b> → pilih warna (Putih/Merah/Biru) → Download.
-      </div>
+    const payload = {
+      contents: [{
+        parts: [
+          { text: prompt },
+          { inlineData: { mimeType: "image/png", data: personBase64 } },
+          { inlineData: { mimeType: "image/png", data: clothesBase64 } }
+        ]
+      }],
+      generationConfig: {
+        responseModalities: ['TEXT', 'IMAGE']
+      }
+    };
 
-      <div class="preview"><canvas id="cv"></canvas></div>
+    // Implementasi retry dengan exponential backoff
+    const callApi = async (retryCount = 0) => {
+      try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
 
-      <div class="hint">Tip: seret untuk geser • scroll/cubit 2 jari untuk zoom</div>
+        if (!response.ok) throw new Error(`API Error: ${response.status}`);
 
-      <div class="row">
-        <button id="btnAI" disabled>⚡ Proses AI (Local)</button>
-        <button id="btnReset" class="secondary" disabled>Reset Posisi</button>
-      </div>
+        const result = await response.json();
+        const imageData = result.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
 
-      <div class="row">
-        <button id="btnJpg" disabled>Download JPG</button>
-        <button id="btnPng" class="secondary" disabled>Download PNG</button>
-      </div>
+        if (imageData) {
+          setResultImage(`data:image/png;base64,${imageData}`);
+          setStatus("Selesai!");
+        } else {
+          throw new Error("Gagal menghasilkan gambar. Silakan coba lagi.");
+        }
+      } catch (err) {
+        if (retryCount < 5) {
+          const delay = Math.pow(2, retryCount) * 1000;
+          setStatus(`Terjadi kendala. Mencoba kembali dalam ${delay/1000} detik...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          return callApi(retryCount + 1);
+        }
+        throw err;
+      }
+    };
 
-      <div class="small">
-        <span class="warn">Catatan:</span> proses AI ini jalan <b>di browser</b> (bukan server). Pertama kali bisa agak lama karena download model/wasm dan otomatis ke-cache. citeturn7view1turn6search2
+    try {
+      await callApi();
+    } catch (err) {
+      setError("Gagal memproses gambar setelah beberapa percobaan. Pastikan foto cukup jelas.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans p-4 md:p-8">
+      <div className="max-w-5xl mx-auto">
+        {/* Header */}
+        <header className="text-center mb-12">
+          <div className="inline-flex items-center justify-center p-3 bg-blue-600 text-white rounded-2xl mb-4 shadow-lg shadow-blue-200">
+            <Shirt size={32} />
+          </div>
+          <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 mb-2">
+            Ganti Pakaian <span className="text-blue-600">AI</span>
+          </h1>
+          <p className="text-slate-500 max-w-lg mx-auto">
+            Gunakan teknologi AI untuk mencoba pakaian baru secara virtual. Unggah foto Anda dan referensi baju yang diinginkan.
+          </p>
+        </header>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Bagian Input */}
+          <div className="space-y-6">
+            <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+              <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <User size={20} className="text-blue-600" />
+                Langkah 1: Unggah Foto Anda
+              </h2>
+              <div 
+                className={`relative group h-64 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center transition-all ${personImage ? 'border-blue-400 bg-blue-50/30' : 'border-slate-200 hover:border-blue-400 hover:bg-slate-50'}`}
+              >
+                {personImage ? (
+                  <img src={personImage} alt="Orang" className="h-full w-full object-contain rounded-xl" />
+                ) : (
+                  <div className="text-center space-y-2 pointer-events-none">
+                    <div className="mx-auto w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-400">
+                      <Upload size={24} />
+                    </div>
+                    <p className="text-sm font-medium text-slate-600">Klik untuk unggah foto Anda</p>
+                    <p className="text-xs text-slate-400 text-center px-4">Pastikan pose tubuh tegak dan terlihat jelas.</p>
+                  </div>
+                )}
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={(e) => handleImageUpload(e, 'person')}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
+                {personImage && (
+                  <button onClick={() => setPersonImage(null)} className="absolute top-2 right-2 bg-white/80 backdrop-blur p-1 rounded-full shadow hover:bg-white text-red-500">
+                    <RefreshCcw size={16} />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+              <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <Shirt size={20} className="text-blue-600" />
+                Langkah 2: Foto Referensi Pakaian
+              </h2>
+              <div 
+                className={`relative group h-64 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center transition-all ${clothesImage ? 'border-blue-400 bg-blue-50/30' : 'border-slate-200 hover:border-blue-400 hover:bg-slate-50'}`}
+              >
+                {clothesImage ? (
+                  <img src={clothesImage} alt="Pakaian" className="h-full w-full object-contain rounded-xl" />
+                ) : (
+                  <div className="text-center space-y-2 pointer-events-none">
+                    <div className="mx-auto w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-400">
+                      <Upload size={24} />
+                    </div>
+                    <p className="text-sm font-medium text-slate-600">Klik untuk unggah foto baju</p>
+                    <p className="text-xs text-slate-400">Contoh: Foto baju yang diletakkan di lantai atau dipasang pada maneken.</p>
+                  </div>
+                )}
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={(e) => handleImageUpload(e, 'clothes')}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
+                {clothesImage && (
+                  <button onClick={() => setClothesImage(null)} className="absolute top-2 right-2 bg-white/80 backdrop-blur p-1 rounded-full shadow hover:bg-white text-red-500">
+                    <RefreshCcw size={16} />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <button
+              onClick={generateTryOn}
+              disabled={isLoading || !personBase64 || !clothesBase64}
+              className={`w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 shadow-xl transition-all ${isLoading || !personBase64 || !clothesBase64 ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none' : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-[0.98]'}`}
+            >
+              {isLoading ? (
+                <>
+                  <RefreshCcw className="animate-spin" size={20} />
+                  Sedang Memproses...
+                </>
+              ) : (
+                <>
+                  <Sparkles size={20} />
+                  Coba Pakaian Sekarang
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Bagian Hasil */}
+          <div className="flex flex-col h-full">
+            <div className="bg-slate-900 rounded-3xl p-6 text-white flex-grow flex flex-col shadow-2xl overflow-hidden min-h-[500px]">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold flex items-center gap-2">
+                  <ImageIcon size={20} />
+                  Hasil Coba Virtual
+                </h2>
+                {isLoading && (
+                  <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs animate-pulse">
+                    AI Sedang Bekerja...
+                  </span>
+                )}
+              </div>
+
+              <div className="flex-grow flex items-center justify-center relative bg-slate-800/50 rounded-2xl border border-slate-700/50">
+                {resultImage ? (
+                  <div className="relative w-full h-full p-2">
+                    <img 
+                      src={resultImage} 
+                      alt="Hasil" 
+                      className="w-full h-full object-contain rounded-xl"
+                    />
+                    <div className="absolute bottom-4 right-4 bg-blue-600 p-2 rounded-lg shadow-lg flex items-center gap-2">
+                      <CheckCircle2 size={16} />
+                      <span className="text-xs font-bold uppercase tracking-wider">Hasil AI</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center p-8 space-y-4">
+                    <div className="mx-auto w-16 h-16 bg-slate-700/50 rounded-full flex items-center justify-center text-slate-500">
+                      <Sparkles size={32} />
+                    </div>
+                    <div>
+                      <p className="text-slate-400 font-medium">Belum ada hasil</p>
+                      <p className="text-slate-500 text-sm max-w-xs mx-auto mt-2">Unggah foto di panel kiri dan klik tombol untuk melihat hasil transformasi pakaian Anda.</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Loading Overlay */}
+                {isLoading && (
+                  <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
+                    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-6"></div>
+                    <p className="text-lg font-semibold text-white mb-2">{status}</p>
+                    <p className="text-slate-400 text-sm italic">"Kami sedang menyesuaikan gaya pakaian ke tubuh Anda..."</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Error Message */}
+              {error && (
+                <div className="mt-4 p-4 bg-red-500/10 border border-red-500/50 rounded-xl flex items-center gap-3 text-red-400 text-sm">
+                  <AlertCircle size={20} className="shrink-0" />
+                  <p>{error}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Kartu Tips */}
+            <div className="mt-6 p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+              <h3 className="text-sm font-bold text-slate-800 mb-2 uppercase tracking-wide">Tips Hasil Terbaik:</h3>
+              <ul className="text-xs text-slate-500 space-y-1">
+                <li>• Gunakan foto diri dengan latar belakang yang polos.</li>
+                <li>• Gunakan pencahayaan yang terang dan merata.</li>
+                <li>• Pastikan pakaian referensi tidak terlipat atau terhalang.</li>
+                <li>• Tunggu sekitar 20-40 detik untuk proses pemrosesan AI.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+  );
+};
 
-    <div class="card">
-      <h3>Pengaturan Pas Foto</h3>
-
-      <label>Ukuran</label>
-      <select id="size" disabled>
-        <option value="2x3cm">2x3</option>
-        <option value="3x4cm" selected>3x4</option>
-        <option value="4x6cm">4x6</option>
-      </select>
-
-      <label>Warna background</label>
-      <input type="color" id="bg" value="#FFFFFF" disabled />
-
-      <div class="chiprow" id="chips">
-        <div class="chip" data-c="#FFFFFF"><span class="swatch" style="background:#fff"></span>Putih</div>
-        <div class="chip" data-c="#E53935"><span class="swatch" style="background:#E53935"></span>Merah</div>
-        <div class="chip" data-c="#1E88E5"><span class="swatch" style="background:#1E88E5"></span>Biru</div>
-        <div class="chip" data-c="#F5F5F5"><span class="swatch" style="background:#F5F5F5"></span>Abu</div>
-      </div>
-
-      <label>Kualitas JPG</label>
-      <select id="quality" disabled>
-        <option value="0.92">Normal</option>
-        <option value="0.95" selected>Bagus</option>
-        <option value="0.98">Maks</option>
-      </select>
-
-      <div class="status" id="libStatus">
-        Library: belum dicek.
-      </div>
-
-      <div class="small">
-        Library background removal yang dipakai: <code>@imgly/background-removal</code> (run di browser, gratis). citeturn6search2turn7view1
-      </div>
-    </div>
-  </div>
-</div>
-
-<footer><div class="foot">BOLEHAN SAYA</div></footer>
-
-<script type="module">
-  import imglyRemoveBackground from "@imgly/background-removal";
-
-  const SIZE = { "2x3cm":[236,354], "3x4cm":[354,472], "4x6cm":[472,709] };
-  const clamp = (n,a,b)=>Math.max(a,Math.min(b,n));
-
-  const cv = document.getElementById("cv");
-  const ctx = cv.getContext("2d");
-  const drop = document.getElementById("drop");
-  const fileEl = document.getElementById("file");
-  const statusEl = document.getElementById("status");
-  const libStatus = document.getElementById("libStatus");
-
-  const sizeEl = document.getElementById("size");
-  const bgEl = document.getElementById("bg");
-  const qEl = document.getElementById("quality");
-
-  const btnAI = document.getElementById("btnAI");
-  const btnReset = document.getElementById("btnReset");
-  const btnJpg = document.getElementById("btnJpg");
-  const btnPng = document.getElementById("btnPng");
-
-  const state = { size:"3x4cm", bg:"#FFFFFF", z:1, x:0, y:0 };
-  let originalImg = null;
-  let cutoutImg = null;
-
-  libStatus.textContent = "Library: siap ✅ (mode local, tanpa server)";
-
-  function setEnabled(on){
-    btnAI.disabled = !on;
-    btnReset.disabled = !on;
-    sizeEl.disabled = !on;
-    bgEl.disabled = !on;
-    qEl.disabled = !on;
-    btnJpg.disabled = !on;
-    btnPng.disabled = !on;
-  }
-  function setEnabledBeforeAI(on){
-    btnAI.disabled = !on;
-    btnReset.disabled = !on;
-    sizeEl.disabled = !on;
-    bgEl.disabled = !on;
-    qEl.disabled = !on;
-    btnJpg.disabled = true;
-    btnPng.disabled = true;
-  }
-
-  function computeCoverCrop(iw, ih, W, H, z, px, py){
-    const tr = W / H, ir = iw / ih;
-    let cw, ch;
-    if (ir > tr){ ch = ih; cw = ch * tr; }
-    else { cw = iw; ch = cw / tr; }
-    z = clamp(z, 1, 2.5);
-    cw /= z; ch /= z;
-    const bx = clamp(0.5 + px, 0, 1);
-    const by = clamp(0.5 + py, 0, 1);
-    const ox = (iw - cw) * bx;
-    const oy = (ih - ch) * by;
-    return { ox, oy, cw, ch };
-  }
-
-  function render(){
-    const [W,H] = SIZE[state.size];
-    cv.width = W; cv.height = H;
-
-    ctx.fillStyle = state.bg;
-    ctx.fillRect(0,0,W,H);
-
-    const img = cutoutImg || originalImg;
-    if(!img) return;
-
-    const iw = img.naturalWidth, ih = img.naturalHeight;
-    const c = computeCoverCrop(iw, ih, W, H, state.z, state.x, state.y);
-    ctx.drawImage(img, c.ox, c.oy, c.cw, c.ch, 0,0,W,H);
-  }
-
-  function resetPos(){
-    state.z = 1; state.x = 0; state.y = 0;
-    render();
-  }
-
-  drop.addEventListener("click", ()=> fileEl.click());
-  drop.addEventListener("dragover", (e)=>{ e.preventDefault(); });
-  drop.addEventListener("drop", async (e)=>{
-    e.preventDefault();
-    const f = e.dataTransfer.files && e.dataTransfer.files[0];
-    if(f) await loadFile(f);
-  });
-
-  fileEl.addEventListener("change", async (e)=>{
-    const f = e.target.files && e.target.files[0];
-    if(f) await loadFile(f);
-    fileEl.value = "";
-  });
-
-  async function loadFile(f){
-    const im = new Image();
-    im.src = URL.createObjectURL(f);
-    await im.decode();
-    originalImg = im;
-    cutoutImg = null;
-    statusEl.innerHTML = "Status: foto masuk. Klik <b>⚡ Proses AI (Local)</b> untuk hapus background jadi transparan.";
-    setEnabledBeforeAI(true);
-    resetPos();
-  }
-
-  sizeEl.addEventListener("input", ()=>{ state.size = sizeEl.value; render(); });
-  bgEl.addEventListener("input", ()=>{ state.bg = bgEl.value; render(); });
-  document.getElementById("chips").addEventListener("click", (e)=>{
-    const chip = e.target.closest(".chip");
-    if(!chip || bgEl.disabled) return;
-    const c = chip.getAttribute("data-c");
-    bgEl.value = c;
-    state.bg = c;
-    render();
-  });
-
-  btnReset.addEventListener("click", resetPos);
-
-  // pan/zoom
-  let dragging=false,lastX=0,lastY=0;
-  cv.addEventListener("pointerdown",(e)=>{
-    if(!originalImg && !cutoutImg) return;
-    dragging=true; lastX=e.clientX; lastY=e.clientY;
-    cv.setPointerCapture(e.pointerId);
-  });
-  cv.addEventListener("pointermove",(e)=>{
-    if(!dragging) return;
-    const img = cutoutImg || originalImg;
-    if(!img) return;
-    const dx=e.clientX-lastX, dy=e.clientY-lastY;
-    lastX=e.clientX; lastY=e.clientY;
-
-    const [W,H]=SIZE[state.size];
-    const iw=img.naturalWidth, ih=img.naturalHeight;
-    const tr=W/H, ir=iw/ih;
-    let cw,ch;
-    if(ir>tr){ ch=ih; cw=ch*tr; } else { cw=iw; ch=cw/tr; }
-    const z=clamp(state.z,1,2.5);
-    cw/=z; ch/=z;
-    const ax=Math.max(1, iw-cw), ay=Math.max(1, ih-ch);
-
-    const dbx = -dx/ax, dby=-dy/ay;
-    const bx=clamp(0.5+state.x+dbx,0,1);
-    const by=clamp(0.5+state.y+dby,0,1);
-    state.x=bx-0.5; state.y=by-0.5;
-    render();
-  });
-  const end=()=>dragging=false;
-  cv.addEventListener("pointerup",end);
-  cv.addEventListener("pointercancel",end);
-
-  cv.addEventListener("wheel",(e)=>{
-    const img = cutoutImg || originalImg;
-    if(!img) return;
-    e.preventDefault();
-    state.z = clamp(state.z + (-e.deltaY*0.0015), 1, 2.5);
-    render();
-  }, {passive:false});
-
-  // AI local
-  btnAI.addEventListener("click", async ()=>{
-    if(!originalImg) return;
-    btnAI.disabled = true;
-    statusEl.innerHTML = "Status: proses AI local... (pertama kali biasanya lama karena download model/wasm)";
-
-    try{
-      // encode original to png blob
-      const tmp = document.createElement("canvas");
-      tmp.width = originalImg.naturalWidth;
-      tmp.height = originalImg.naturalHeight;
-      tmp.getContext("2d").drawImage(originalImg,0,0);
-      const inBlob = await new Promise(r=>tmp.toBlob(r,"image/png",1));
-
-      // remove background -> returns PNG blob with alpha
-      const outBlob = await imglyRemoveBackground(inBlob);
-
-      const outImg = new Image();
-      outImg.src = URL.createObjectURL(outBlob);
-      await outImg.decode();
-
-      cutoutImg = outImg;
-      statusEl.innerHTML = "Status: AI selesai ✅ Background sudah transparan. Sekarang pilih warna & Download.";
-      setEnabled(true);
-      render();
-    }catch(err){
-      console.error(err);
-      statusEl.innerHTML = "Gagal proses AI local: " + (err?.message || err) + "<br/>Cek internet (buat download model/wasm) lalu refresh dan coba lagi.";
-      btnAI.disabled = false;
-    }
-  });
-
-  function downloadCanvas(ext){
-    const q = parseFloat(qEl.value || "0.95");
-    const a = document.createElement("a");
-    if(ext === "png"){
-      a.href = cv.toDataURL("image/png");
-      a.download = "FnD-pasfoto-" + state.size + ".png";
-    }else{
-      a.href = cv.toDataURL("image/jpeg", q);
-      a.download = "FnD-pasfoto-" + state.bg.replace("#","") + "-" + state.size + ".jpg";
-    }
-    a.click();
-  }
-  btnJpg.addEventListener("click", ()=>downloadCanvas("jpg"));
-  btnPng.addEventListener("click", ()=>downloadCanvas("png"));
-
-  // init
-  render();
-</script>
-</body>
-</html>
+export default App;
