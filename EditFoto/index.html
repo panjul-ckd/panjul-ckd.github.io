@@ -434,6 +434,8 @@ label{
 
 <footer>
   <div class="footer-extra">
+    <a class="footer-link" href="#" id="aiBackgroundLink">✂ Hapus Background AI</a>
+    <div class="footer-safe">AI berjalan di PC utama. Dari laptop, masukkan alamat IP PC saat diminta.</div>
     <a class="footer-link" href="https://gemini.google.com/share/d726d144f51a" target="_blank" rel="noopener noreferrer">Ganti warna latar</a>
     <div class="footer-safe">(butuh login Google Gemini, ini aman kok)</div>
     <div class="footer-bottom">
@@ -702,6 +704,32 @@ sizePopupOk.onclick = ()=>{
 sizePopup.addEventListener('click', (e)=>{
   if(e.target === sizePopup) sizePopup.classList.remove('show');
 });
+
+// ===== Akses Background Remover Studio di PC melalui jaringan lokal =====
+(function () {
+  const aiLink = document.getElementById("aiBackgroundLink");
+  if (!aiLink) return;
+  aiLink.addEventListener("click", function (event) {
+    event.preventDefault();
+    const savedHost = localStorage.getItem("fndAiPcHost") || "localhost";
+    let host = prompt(
+      "Masukkan alamat PC yang menjalankan Background Remover AI.\n" +
+      "Di PC itu sendiri: localhost\n" +
+      "Di laptop: masukkan IPv4 PC, contoh 192.168.1.10.",
+      savedHost
+    );
+    if (host === null) return;
+    host = host.trim().replace(/^https?:\/\//i, "").replace(/\/+$/, "");
+    if (!/^[a-zA-Z0-9.-]+(?::\d{1,5})?$/.test(host)) {
+      alert("Alamat tidak valid. Masukkan localhost atau IPv4 PC, misalnya 192.168.1.10.");
+      return;
+    }
+    localStorage.setItem("fndAiPcHost", host);
+    const destination = "http://" + host + (host.includes(":") ? "" : ":7860");
+    window.open(destination, "_blank", "noopener");
+  });
+})();
+
 </script>
 </body>
 </html>
